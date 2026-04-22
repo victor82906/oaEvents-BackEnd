@@ -1,6 +1,7 @@
 package com.vmr.oaevents.controller;
 
 import com.vmr.oaevents.model.Usuario;
+import com.vmr.oaevents.model.dto.usuario.CambiarContrasenaDto;
 import com.vmr.oaevents.model.dto.usuario.UsuarioInputDto;
 import com.vmr.oaevents.model.dto.usuario.UsuarioOutputDto;
 import com.vmr.oaevents.model.mapper.UsuarioMapper;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -56,4 +58,11 @@ public class UsuarioController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/contrasena")
+    public ResponseEntity<Map<String, String>> cambiarCotrasena(@PathVariable Long id, @Valid @RequestBody CambiarContrasenaDto cambiarContrasenaDto){
+        service.cambiarContrasena(id, cambiarContrasenaDto);
+        return ResponseEntity.ok(Map.of("mensaje", "Contraseña cambiada correctamente"));
+    }
+
 }

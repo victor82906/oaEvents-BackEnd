@@ -9,4 +9,5 @@ public interface CompradorService {
     Comprador save(Comprador entity);
     Comprador update(Long id, Comprador entity);
     void deleteById(Long id);
+    boolean existByDni(String dni);
 }

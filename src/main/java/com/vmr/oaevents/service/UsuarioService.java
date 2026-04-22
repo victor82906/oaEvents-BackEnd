@@ -1,6 +1,7 @@
 package com.vmr.oaevents.service;
 
 import com.vmr.oaevents.model.Usuario;
+import com.vmr.oaevents.model.dto.usuario.CambiarContrasenaDto;
 import com.vmr.oaevents.model.dto.usuario.UsuarioOutputDto;
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface UsuarioService {
     Usuario save(Usuario entity);
     Usuario update(Long id, Usuario entity);
     void deleteById(Long id);
+    boolean existByEmail(String email);
+    void cambiarContrasena(Long id, CambiarContrasenaDto cambiarContrasenaDto);
 }

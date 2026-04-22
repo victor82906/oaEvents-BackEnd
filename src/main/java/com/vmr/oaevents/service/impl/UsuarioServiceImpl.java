@@ -1,6 +1,7 @@
 package com.vmr.oaevents.service.impl;
 
 import com.vmr.oaevents.model.Usuario;
+import com.vmr.oaevents.model.dto.usuario.CambiarContrasenaDto;
 import com.vmr.oaevents.model.dto.usuario.UsuarioOutputDto;
 import com.vmr.oaevents.model.mapper.UsuarioMapper;
 import com.vmr.oaevents.repository.UsuarioRepository;
@@ -55,4 +56,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void deleteById(Long id) {
         repository.delete(this.findById(id));
     }
+
+    @Override
+    public boolean existByEmail(String email){
+        return repository.existByEmail(email);
+    }
+
+    @Override
+    public void cambiarContrasena(Long id, CambiarContrasenaDto cambiarContrasenaDto){
+        Usuario usuario = this.findById(id);
+
+        if(!passwordEncoder.matches(cambiarContrasenaDto.getContrasenaActual(), usuario.getContrasena())){
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        usuario.setContrasena(passwordEncoder.encode(cambiarContrasenaDto.getContrasena()));
+        repository.save(usuario);
+    }
+
 }

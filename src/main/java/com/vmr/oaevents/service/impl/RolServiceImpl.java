@@ -27,6 +27,12 @@ public class RolServiceImpl implements RolService {
     }
 
     @Override
+    public Rol findByNombre(String nombre) {
+        return repository.findByNombre(nombre)
+                .orElseThrow(() -> new EntityNotFoundException("Rol: " + nombre + ", no encontrado"));
+    }
+
+    @Override
     public Rol save(Rol entity) {
         return repository.save(entity);
     }

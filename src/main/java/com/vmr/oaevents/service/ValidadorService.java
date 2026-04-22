@@ -9,4 +9,5 @@ public interface ValidadorService {
     Validador save(Validador entity);
     Validador update(Long id, Validador entity);
     void deleteById(Long id);
+    boolean existByDni(String dni);
 }
