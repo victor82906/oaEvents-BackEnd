@@ -13,5 +13,6 @@ public interface UsuarioService {
     Usuario update(Long id, Usuario entity);
     void deleteById(Long id);
     boolean existByEmail(String email);
+    boolean existByEmail(String email, Long id);
     void cambiarContrasena(Long id, CambiarContrasenaDto cambiarContrasenaDto);
 }

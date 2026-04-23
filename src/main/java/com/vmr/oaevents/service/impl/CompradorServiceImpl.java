@@ -50,10 +50,10 @@ public class CompradorServiceImpl implements CompradorService {
     public Comprador update(Long id, Comprador entity) {
         Comprador comprador = this.findById(id);
         entity.setId(id);
-        if (usuarioService.existByEmail(entity.getEmail())){
-            throw new EntityNotFoundException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
-        } else if (this.existByDni(entity.getDni())){
-            throw new EntityNotFoundException("Dni: " + entity.getDni() + ", ya existente en la base de datos");
+        if (usuarioService.existByEmail(entity.getEmail(), id)){
+            throw new EntityExistsException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
+        } else if (this.existByDni(entity.getDni(), id)){
+            throw new EntityExistsException("Dni: " + entity.getDni() + ", ya existente en la base de datos");
         }
         entity.setRol(rolService.findByNombre("COMPRADOR"));
         entity.setContrasena(comprador.getContrasena());
@@ -62,12 +62,21 @@ public class CompradorServiceImpl implements CompradorService {
 
     @Override
     public void deleteById(Long id) {
+        Comprador comprador = this.findById(id);
+        // comprobar con y sin esto
+        comprador.getEntradas()
+                .forEach(entrada -> entrada.setComprador(null));
         repository.delete(this.findById(id));
     }
 
     @Override
     public boolean existByDni(String dni){
         return repository.existByDni(dni);
+    }
+
+    @Override
+    public boolean existByDni(String dni, Long id) {
+        return repository.existByDniAndIdNot(dni, id);
     }
 
 }

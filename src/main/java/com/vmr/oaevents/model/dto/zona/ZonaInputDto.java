@@ -15,6 +15,9 @@ public class ZonaInputDto {
     @NotBlank(message = "La puerta de entrada es obligatoria")
     private String puertaEntrada;
 
+    @NotNull(message = "El campo pista es obligatorio")
+    private Boolean pista;
+
     @NotNull(message = "El id de recinto es obligatorio")
     private Long recinto_id;
 

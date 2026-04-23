@@ -33,13 +33,14 @@ public class QrServiceImpl implements QrService {
 
     @Override
     public Qr update(Long id, Qr entity) {
-        this.findById(id);
         entity.setId(id);
         return repository.save(entity);
     }
 
     @Override
     public void deleteById(Long id) {
+        Qr qr = this.findById(id);
+        qr.getEntrada().setQr(null);
         repository.delete(this.findById(id));
     }
 }

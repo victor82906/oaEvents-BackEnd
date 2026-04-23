@@ -49,10 +49,10 @@ public class EmpresaServiceImpl implements EmpresaService {
     public Empresa update(Long id, Empresa entity) {
         Empresa empresa = this.findById(id);
         entity.setId(id);
-        if (usuarioService.existByEmail(entity.getEmail())){
-            throw new EntityNotFoundException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
-        } else if(this.existByCif(entity.getCif())){
-            throw new EntityNotFoundException("Cif: " + entity.getCif() + ", ya existente en la base de datos");
+        if (usuarioService.existByEmail(entity.getEmail(), id)){
+            throw new EntityExistsException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
+        } else if(this.existByCif(entity.getCif(), id)){
+            throw new EntityExistsException("Cif: " + entity.getCif() + ", ya existente en la base de datos");
         }
         entity.setRol(rolService.findByNombre("EMPRESA"));
         entity.setContrasena(empresa.getContrasena());
@@ -61,12 +61,21 @@ public class EmpresaServiceImpl implements EmpresaService {
 
     @Override
     public void deleteById(Long id) {
+        Empresa empresa = this.findById(id);
+        // comprobar con y sin esto
+        empresa.getEventos()
+                .forEach(evento -> evento.setEmpresa(null));
         repository.delete(this.findById(id));
     }
 
     @Override
     public boolean existByCif(String cif){
         return repository.existByCif(cif);
+    }
+
+    @Override
+    public boolean existByCif(String cif, Long id){
+        return repository.existByCifAndIdNot(cif, id);
     }
 
 }

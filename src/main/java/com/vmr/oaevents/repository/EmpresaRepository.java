@@ -9,4 +9,6 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 
     boolean existByCif(String cif);
 
+    boolean existByCifAndIdNot(String cif, Long id);
+
 }

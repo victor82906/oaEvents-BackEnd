@@ -2,6 +2,7 @@ package com.vmr.oaevents.exception;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -63,6 +64,19 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.builder()
                 .message(ex.getMessage())
                 .statusCode(409)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String mensaje = "No se puede eliminar el registro porque tiene datos asociados en el sistema.";
+
+        ErrorResponse error = ErrorResponse.builder()
+                .message(mensaje)
+                .statusCode(HttpStatus.CONFLICT.value()) // O HttpStatus.BAD_REQUEST.value()
                 .timestamp(LocalDateTime.now())
                 .build();
 

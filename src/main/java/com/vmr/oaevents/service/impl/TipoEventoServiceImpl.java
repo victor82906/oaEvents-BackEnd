@@ -5,6 +5,7 @@ import com.vmr.oaevents.repository.TipoEventoRepository;
 import com.vmr.oaevents.service.TipoEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +41,10 @@ public class TipoEventoServiceImpl implements TipoEventoService {
 
     @Override
     public void deleteById(Long id) {
+        TipoEvento tipoEvento = this.findById(id);
+        if (!tipoEvento.getEventos().isEmpty()) {
+            throw new DataIntegrityViolationException("Tiene Eventos asociados");
+        }
         repository.delete(this.findById(id));
     }
 }

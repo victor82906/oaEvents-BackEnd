@@ -25,10 +25,10 @@ public class Usuario implements UserDetails {
     private String nombre;
     private String telefono;
 
-    @OneToMany(mappedBy = "emisor")
+    @OneToMany(mappedBy = "emisor", cascade = CascadeType.REMOVE)
     private List<Chat> mensajesEnviados;
 
-    @OneToMany(mappedBy = "receptor")
+    @OneToMany(mappedBy = "receptor", cascade = CascadeType.REMOVE)
     private List<Chat> mensajesRecividos;
 
     @ManyToOne

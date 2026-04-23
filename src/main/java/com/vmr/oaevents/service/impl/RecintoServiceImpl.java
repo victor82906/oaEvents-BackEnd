@@ -47,8 +47,8 @@ public class RecintoServiceImpl implements RecintoService {
     public Recinto update(Long id, Recinto entity) {
         Recinto recinto = this.findById(id);
         entity.setId(id);
-        if (usuarioService.existByEmail(entity.getEmail())){
-            throw new EntityNotFoundException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
+        if (usuarioService.existByEmail(entity.getEmail(), id)){
+            throw new EntityExistsException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
         }
         entity.setRol(rolService.findByNombre("RECINTO"));
         entity.setContrasena(recinto.getContrasena());
@@ -57,6 +57,10 @@ public class RecintoServiceImpl implements RecintoService {
 
     @Override
     public void deleteById(Long id) {
+        Recinto recinto = this.findById(id);
+        // comprobar con y sin esto
+        recinto.getZonas()
+                .forEach(zona -> zona.setRecinto(null));
         repository.delete(this.findById(id));
     }
 }

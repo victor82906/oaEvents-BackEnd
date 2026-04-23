@@ -49,10 +49,10 @@ public class ValidadorServiceImpl implements ValidadorService {
     public Validador update(Long id, Validador entity) {
         Validador validador = this.findById(id);
         entity.setId(id);
-        if (usuarioService.existByEmail(entity.getEmail())){
-            throw new EntityNotFoundException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
-        } else if (this.existByDni(entity.getDni())){
-            throw new EntityNotFoundException("Dni: " + entity.getDni() + ", ya existente en la base de datos");
+        if (usuarioService.existByEmail(entity.getEmail(), id)){
+            throw new EntityExistsException("Email: " + entity.getEmail() + ", ya existente en la base de datos");
+        } else if (this.existByDni(entity.getDni(), id)){
+            throw new EntityExistsException("Dni: " + entity.getDni() + ", ya existente en la base de datos");
         }
         entity.setRol(rolService.findByNombre("VALIDADOR"));
         entity.setContrasena(validador.getContrasena());
@@ -67,6 +67,11 @@ public class ValidadorServiceImpl implements ValidadorService {
     @Override
     public boolean existByDni(String dni){
         return repository.existByDni(dni);
+    }
+
+    @Override
+    public boolean existByDni(String dni, Long id){
+        return repository.existByDniAndIdNot(dni, id);
     }
 
 }

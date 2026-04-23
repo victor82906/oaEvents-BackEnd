@@ -64,6 +64,7 @@ public class EntradaServiceImpl implements EntradaService {
 
     @Override
     public void deleteById(Long id) {
+        this.findById(id);
         repository.delete(this.findById(id));
     }
 }

@@ -10,4 +10,5 @@ public interface EmpresaService {
     Empresa update(Long id, Empresa entity);
     void deleteById(Long id);
     boolean existByCif(String cif);
+    boolean existByCif(String cif, Long id);
 }

@@ -5,6 +5,7 @@ import com.vmr.oaevents.repository.RolRepository;
 import com.vmr.oaevents.service.RolService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,6 +47,10 @@ public class RolServiceImpl implements RolService {
 
     @Override
     public void deleteById(Long id) {
+        Rol rol = this.findById(id);
+        if (!rol.getUsuarios().isEmpty()) {
+            throw new DataIntegrityViolationException("Tiene Usuarios asociados");
+        }
         repository.delete(this.findById(id));
     }
 }

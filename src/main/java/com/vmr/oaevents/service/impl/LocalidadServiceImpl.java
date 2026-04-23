@@ -46,6 +46,10 @@ public class LocalidadServiceImpl implements LocalidadService {
 
     @Override
     public void deleteById(Long id) {
+        Localidad localidad = this.findById(id);
+        // comprobar con y sin esto
+        localidad.getEntradas()
+                .forEach(entrada -> entrada.setLocalidad(null));
         repository.delete(this.findById(id));
     }
 }

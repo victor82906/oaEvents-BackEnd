@@ -52,6 +52,9 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
 
     @Override
     public void deleteById(Long id) {
+        ZonaEvento zonaEvento = this.findById(id);
+        zonaEvento.getEntradas()
+                .forEach(entrada -> entrada.setZonaEvento(null));
         repository.delete(this.findById(id));
     }
 }

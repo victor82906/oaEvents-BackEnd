@@ -3,10 +3,12 @@ package com.vmr.oaevents.service.impl;
 import com.vmr.oaevents.model.Empresa;
 import com.vmr.oaevents.model.Evento;
 import com.vmr.oaevents.model.TipoEvento;
+import com.vmr.oaevents.model.ZonaEvento;
 import com.vmr.oaevents.repository.EventoRepository;
 import com.vmr.oaevents.service.EmpresaService;
 import com.vmr.oaevents.service.EventoService;
 import com.vmr.oaevents.service.TipoEventoService;
+import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class EventoServiceImpl implements EventoService {
     private final EventoRepository repository;
     private final TipoEventoService tipoEventoService;
     private final EmpresaService empresaService;
+    private final ZonaEventoService zonaEventoService;
 
     @Override
     public List<Evento> findAll() {
@@ -55,6 +58,10 @@ public class EventoServiceImpl implements EventoService {
 
     @Override
     public void deleteById(Long id) {
+        Evento evento = this.findById(id);
+        evento.getZonasEvento().stream()
+                .map(ZonaEvento::getId)
+                .forEach(this.zonaEventoService::deleteById);
         repository.delete(this.findById(id));
     }
 }

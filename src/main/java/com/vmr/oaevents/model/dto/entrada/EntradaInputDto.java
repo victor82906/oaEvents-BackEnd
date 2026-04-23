@@ -16,7 +16,7 @@ public class EntradaInputDto {
 
     private String dniComprador;
 
-    private double precio;
+    private Double precio;
 
     @NotNull(message = "El id de localidad es obligatorio")
     private Long localidad_id;

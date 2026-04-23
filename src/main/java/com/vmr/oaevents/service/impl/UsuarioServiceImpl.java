@@ -63,6 +63,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public boolean existByEmail(String email, Long id){
+        return repository.existByEmailAndIdNot(email, id);
+    }
+
+    @Override
     public void cambiarContrasena(Long id, CambiarContrasenaDto cambiarContrasenaDto){
         Usuario usuario = this.findById(id);
 

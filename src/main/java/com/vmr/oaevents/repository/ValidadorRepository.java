@@ -9,4 +9,6 @@ public interface ValidadorRepository extends JpaRepository<Validador, Long> {
 
     boolean existByDni(String dni);
 
+    boolean existByDniAndIdNot(String dni, Long id);
+
 }

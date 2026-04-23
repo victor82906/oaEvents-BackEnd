@@ -49,6 +49,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void deleteById(Long id) {
+        this.findById(id);
         repository.delete(this.findById(id));
     }
 }
