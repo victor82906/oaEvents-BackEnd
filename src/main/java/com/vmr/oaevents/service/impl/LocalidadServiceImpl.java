@@ -24,6 +24,12 @@ public class LocalidadServiceImpl implements LocalidadService {
     }
 
     @Override
+    public List<Localidad> findByZonaId(Long zonaId) {
+        zonaService.findById(zonaId); // Validar existencia de la zona
+        return repository.findByZonaId(zonaId);
+    }
+
+    @Override
     public Localidad findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Localidad no encontrada con id: " + id));

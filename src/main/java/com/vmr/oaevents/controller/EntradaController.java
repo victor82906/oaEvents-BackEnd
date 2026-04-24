@@ -7,6 +7,8 @@ import com.vmr.oaevents.model.mapper.EntradaMapper;
 import com.vmr.oaevents.service.EntradaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,18 @@ public class EntradaController {
                         .map(mapper::toDto)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<EntradaOutputDto>> findAllPaged(Pageable pageable) {
+        Page<Entrada> page = service.findAll(pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
+    @GetMapping("/comprador/{compradorId}/page")
+    public ResponseEntity<Page<EntradaOutputDto>> findByCompradorId(@PathVariable Long compradorId, Pageable pageable) {
+        Page<Entrada> page = service.findByCompradorId(compradorId, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/{id}")

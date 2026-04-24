@@ -7,6 +7,8 @@ import com.vmr.oaevents.service.ChatService;
 import com.vmr.oaevents.service.UsuarioService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,13 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<Chat> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Page<Chat> findConversation(Long emisorId, Long receptorId, Pageable pageable) {
+        usuarioService.findById(emisorId);
+        usuarioService.findById(receptorId);
+        return repository.findConversation(emisorId, receptorId, pageable);
     }
 
     @Override

@@ -7,6 +7,8 @@ import com.vmr.oaevents.model.mapper.EmpresaMapper;
 import com.vmr.oaevents.service.EmpresaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,24 @@ public class EmpresaController {
         );
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<Page<EmpresaOutputDto>> findAllPaged(Pageable pageable) {
+        Page<Empresa> page = service.findAll(pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
+    @GetMapping("/activas/page")
+    public ResponseEntity<Page<EmpresaOutputDto>> findAllActivas(Pageable pageable) {
+        Page<Empresa> page = service.findAllByActiva(true, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
+    @GetMapping("/inactivas/page")
+    public ResponseEntity<Page<EmpresaOutputDto>> findAllInactivas(Pageable pageable) {
+        Page<Empresa> page = service.findAllByActiva(false, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EmpresaOutputDto> findById(@PathVariable Long id) {
         Empresa entity = service.findById(id);
@@ -52,6 +72,18 @@ public class EmpresaController {
     public ResponseEntity<EmpresaOutputDto> update(@PathVariable Long id, @Valid @RequestBody EmpresaInputDto inputDto) {
         Empresa entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
+        return ResponseEntity.ok(mapper.toDto(entity));
+    }
+
+    @PatchMapping("/{id}/activar")
+    public ResponseEntity<EmpresaOutputDto> activate(@PathVariable Long id) {
+        Empresa entity = service.activate(id);
+        return ResponseEntity.ok(mapper.toDto(entity));
+    }
+
+    @PatchMapping("/{id}/desactivar")
+    public ResponseEntity<EmpresaOutputDto> deactivate(@PathVariable Long id) {
+        Empresa entity = service.deactivate(id);
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 

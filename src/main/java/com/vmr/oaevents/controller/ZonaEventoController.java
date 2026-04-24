@@ -31,6 +31,15 @@ public class ZonaEventoController {
         );
     }
 
+    @GetMapping("/evento/{eventoId}")
+    public ResponseEntity<List<ZonaEventoOutputDto>> findByEventoId(@PathVariable Long eventoId) {
+        return ResponseEntity.ok(
+                service.findByEventoId(eventoId).stream()
+                        .map(mapper::toDto)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ZonaEventoOutputDto> findById(@PathVariable Long id) {
         ZonaEvento entity = service.findById(id);

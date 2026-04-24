@@ -1,9 +1,6 @@
 package com.vmr.oaevents.service.impl;
 
-import com.vmr.oaevents.model.Comprador;
-import com.vmr.oaevents.model.Entrada;
-import com.vmr.oaevents.model.Localidad;
-import com.vmr.oaevents.model.ZonaEvento;
+import com.vmr.oaevents.model.*;
 import com.vmr.oaevents.repository.EntradaRepository;
 import com.vmr.oaevents.service.CompradorService;
 import com.vmr.oaevents.service.EntradaService;
@@ -11,10 +8,13 @@ import com.vmr.oaevents.service.LocalidadService;
 import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +24,23 @@ public class EntradaServiceImpl implements EntradaService {
     private final LocalidadService localidadService;
     private final ZonaEventoService zonaEventoService;
     private final CompradorService compradorService;
+    private final QrGeneratorService qrGeneratorService;
 
     @Override
     public List<Entrada> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Page<Entrada> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Entrada> findByCompradorId(Long compradorId, Pageable pageable) {
+        // Valida que el comprador exista (opcional pero recomendable)
+        compradorService.findById(compradorId);
+        return repository.findByCompradorId(compradorId, pageable);
     }
 
     @Override
@@ -41,6 +54,15 @@ public class EntradaServiceImpl implements EntradaService {
         Localidad localidad = localidadService.findById(entity.getLocalidad().getId());
         ZonaEvento zonaEvento = zonaEventoService.findById(entity.getZonaEvento().getId());
         Comprador comprador = compradorService.findById(entity.getComprador().getId());
+
+        String codigo = UUID.randomUUID().toString();
+        String rutaQr = qrGeneratorService.generateQr(codigo);
+
+        Qr qr = new Qr();
+        qr.setCodigo(codigo);
+        qr.setFoto(rutaQr);
+
+        entity.setQr(qr);
         entity.setLocalidad(localidad);
         entity.setZonaEvento(zonaEvento);
         entity.setComprador(comprador);

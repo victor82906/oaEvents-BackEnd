@@ -27,6 +27,12 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
     }
 
     @Override
+    public List<ZonaEvento> findByEventoId(Long eventoId) {
+        eventoService.findById(eventoId); // Validar que el evento existe
+        return repository.findByEventoId(eventoId);
+    }
+
+    @Override
     public ZonaEvento findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ZonaEvento no encontrado con id: " + id));

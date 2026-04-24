@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface ZonaService {
     List<Zona> findAll();
+    List<Zona> findByRecintoId(Long recintoId);
     Zona findById(Long id);
     Zona save(Zona entity);
     Zona update(Long id, Zona entity);

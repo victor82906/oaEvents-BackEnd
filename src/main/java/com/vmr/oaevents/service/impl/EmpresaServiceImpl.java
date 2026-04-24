@@ -8,6 +8,8 @@ import com.vmr.oaevents.service.UsuarioService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,16 @@ public class EmpresaServiceImpl implements EmpresaService {
     }
 
     @Override
+    public Page<Empresa> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Empresa> findAllByActiva(boolean activa, Pageable pageable) {
+        return repository.findByActiva(activa, pageable);
+    }
+
+    @Override
     public Empresa findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa no encontrada con id: " + id));
@@ -42,6 +54,7 @@ public class EmpresaServiceImpl implements EmpresaService {
         }
         entity.setRol(rolService.findByNombre("EMPRESA"));
         entity.setContrasena(passwordEncoder.encode(entity.getContrasena()));
+        entity.setActiva(false);
         return repository.save(entity);
     }
 
@@ -56,7 +69,22 @@ public class EmpresaServiceImpl implements EmpresaService {
         }
         entity.setRol(rolService.findByNombre("EMPRESA"));
         entity.setContrasena(empresa.getContrasena());
+        entity.setActiva(empresa.isActiva());
         return repository.save(entity);
+    }
+
+    @Override
+    public Empresa activate(Long id) {
+        Empresa empresa = this.findById(id);
+        empresa.setActiva(true);
+        return repository.save(empresa);
+    }
+
+    @Override
+    public Empresa deactivate(Long id) {
+        Empresa empresa = this.findById(id);
+        empresa.setActiva(false);
+        return repository.save(empresa);
     }
 
     @Override

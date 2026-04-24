@@ -7,6 +7,8 @@ import com.vmr.oaevents.model.mapper.ChatMapper;
 import com.vmr.oaevents.service.ChatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,15 @@ public class ChatController {
                         .map(mapper::toDto)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("/conversacion/{emisorId}/{receptorId}")
+    public ResponseEntity<Page<ChatOutputDto>> findConversation(
+            @PathVariable Long emisorId,
+            @PathVariable Long receptorId,
+            Pageable pageable) {
+        Page<Chat> page = service.findConversation(emisorId, receptorId, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/{id}")

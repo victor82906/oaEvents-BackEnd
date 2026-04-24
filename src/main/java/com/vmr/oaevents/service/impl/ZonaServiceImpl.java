@@ -24,6 +24,12 @@ public class ZonaServiceImpl implements ZonaService {
     }
 
     @Override
+    public List<Zona> findByRecintoId(Long recintoId) {
+        recintoService.findById(recintoId); // Validar que el recinto existe
+        return repository.findByRecintoId(recintoId);
+    }
+
+    @Override
     public Zona findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Zona no encontrada con id: " + id));

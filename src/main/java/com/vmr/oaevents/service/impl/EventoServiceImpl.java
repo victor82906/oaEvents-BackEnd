@@ -11,6 +11,8 @@ import com.vmr.oaevents.service.TipoEventoService;
 import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,28 @@ public class EventoServiceImpl implements EventoService {
     @Override
     public List<Evento> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Page<Evento> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Evento> findAllByAceptado(boolean aceptado, Pageable pageable) {
+        return repository.findByAceptado(aceptado, pageable);
+    }
+
+    @Override
+    public Page<Evento> findByEmpresaId(Long empresaId, Pageable pageable) {
+        empresaService.findById(empresaId);
+        return repository.findByEmpresaId(empresaId, pageable);
+    }
+
+    @Override
+    public Page<Evento> findByEmpresaIdAndAceptado(Long empresaId, boolean aceptado, Pageable pageable) {
+        empresaService.findById(empresaId);
+        return repository.findByEmpresaIdAndAceptado(empresaId, aceptado, pageable);
     }
 
     @Override

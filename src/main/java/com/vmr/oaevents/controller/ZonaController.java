@@ -31,6 +31,15 @@ public class ZonaController {
         );
     }
 
+    @GetMapping("/recinto/{recintoId}")
+    public ResponseEntity<List<ZonaOutputDto>> findByRecintoId(@PathVariable Long recintoId) {
+        return ResponseEntity.ok(
+                service.findByRecintoId(recintoId).stream()
+                        .map(mapper::toDto)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ZonaOutputDto> findById(@PathVariable Long id) {
         Zona entity = service.findById(id);

@@ -7,6 +7,8 @@ import com.vmr.oaevents.model.mapper.ValidadorMapper;
 import com.vmr.oaevents.service.ValidadorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,12 @@ public class ValidadorController {
                         .map(mapper::toDto)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<ValidadorOutputDto>> findAllPaged(Pageable pageable) {
+        Page<Validador> page = service.findAll(pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/{id}")
