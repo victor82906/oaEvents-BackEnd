@@ -46,10 +46,11 @@ public class QrServiceImpl implements QrService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Qr qr = this.findById(id);
         qr.getEntrada().setQr(null);
-        repository.delete(this.findById(id));
+        repository.delete(qr);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.vmr.oaevents.service.RolService;
 import com.vmr.oaevents.service.UsuarioService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -93,12 +94,13 @@ public class EmpresaServiceImpl implements EmpresaService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Empresa empresa = this.findById(id);
         // comprobar con y sin esto
         empresa.getEventos()
                 .forEach(evento -> evento.setEmpresa(null));
-        repository.delete(this.findById(id));
+        repository.delete(empresa);
     }
 
     @Override

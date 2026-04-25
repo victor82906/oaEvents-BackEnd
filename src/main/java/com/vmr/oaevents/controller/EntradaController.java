@@ -1,6 +1,8 @@
 package com.vmr.oaevents.controller;
 
 import com.vmr.oaevents.model.Entrada;
+import com.vmr.oaevents.model.dto.entrada.EntradaCompraInputDto;
+import com.vmr.oaevents.model.dto.entrada.EntradaCompraLogueadoInputDto;
 import com.vmr.oaevents.model.dto.entrada.EntradaInputDto;
 import com.vmr.oaevents.model.dto.entrada.EntradaOutputDto;
 import com.vmr.oaevents.model.mapper.EntradaMapper;
@@ -53,6 +55,16 @@ public class EntradaController {
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 
+    @PostMapping("/comprar/logueado")
+    public ResponseEntity<List<Long>> comprarEntradasLogueado(@Valid @RequestBody EntradaCompraLogueadoInputDto entradaCompraLogueadoInputDto) {
+        return ResponseEntity.ok(service.procesarPagoLogueado(entradaCompraLogueadoInputDto));
+    }
+
+    @PostMapping("/comprar")
+    public ResponseEntity<List<Long>> comprarEntradas(@Valid @RequestBody EntradaCompraInputDto entradaCompraInputDto) {
+        return ResponseEntity.ok(service.procesarPago(entradaCompraInputDto));
+    }
+
     @GetMapping("/{id}/descargar")
     public ResponseEntity<byte[]> descargarEntrada(@PathVariable Long id) {
         byte[] pdfBytes = service.descargarEntradaPdf(id);
@@ -67,7 +79,7 @@ public class EntradaController {
     @PostMapping
     public ResponseEntity<EntradaOutputDto> create(@Valid @RequestBody EntradaInputDto inputDto) {
         Entrada entity = mapper.toEntity(inputDto);
-        entity = service.save(entity);
+        entity = service.save(entity, false);
         return new ResponseEntity<>(mapper.toDto(entity), HttpStatus.CREATED);
     }
 

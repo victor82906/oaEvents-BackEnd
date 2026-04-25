@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 public class ZonaInputDto {
 
+    @NotBlank(message = "El numero es obligatorio")
+    private String numero;
+
     @NotBlank(message = "Las coordenadas son obligatorias")
     private String coordenadas;
 

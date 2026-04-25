@@ -10,6 +10,7 @@ import java.util.List;
 public class ZonaOutputDto {
 
     private Long id;
+    private String numero;
     private String coordenadas;
     private String puertaEntrada;
     private Long recinto_id;

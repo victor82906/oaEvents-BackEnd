@@ -10,6 +10,7 @@ import com.vmr.oaevents.service.ZonaService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -57,10 +58,11 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         ZonaEvento zonaEvento = this.findById(id);
         zonaEvento.getEntradas()
                 .forEach(entrada -> entrada.setZonaEvento(null));
-        repository.delete(this.findById(id));
+        repository.delete(zonaEvento);
     }
 }

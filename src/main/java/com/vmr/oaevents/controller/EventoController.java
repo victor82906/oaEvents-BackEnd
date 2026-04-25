@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -88,6 +89,15 @@ public class EventoController {
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
+    @GetMapping("/buscar/aceptados/fechas/page")
+    public ResponseEntity<Page<EventoOutputDto>> findAceptadosByFechas(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio, 
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            Pageable pageable) {
+        Page<Evento> page = service.findAceptadosByRangoFechas(fechaInicio, fechaFin, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventoOutputDto> findById(@PathVariable Long id) {
         Evento entity = service.findById(id);
@@ -99,6 +109,14 @@ public class EventoController {
         Evento entity = mapper.toEntity(inputDto);
         entity = service.save(entity);
         return new ResponseEntity<>(mapper.toDto(entity), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/foto")
+    public ResponseEntity<EventoOutputDto> addFoto(
+            @PathVariable Long id, 
+            @RequestParam("archivo") MultipartFile foto) {
+        Evento entity = service.addFoto(id, foto);
+        return ResponseEntity.ok(mapper.toDto(entity));
     }
 
     @PutMapping("/{id}")

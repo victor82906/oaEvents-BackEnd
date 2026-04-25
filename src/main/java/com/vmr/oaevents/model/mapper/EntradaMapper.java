@@ -14,6 +14,7 @@ public interface EntradaMapper {
     @Mapping(source = "comprador_id", target = "comprador.id")
     @Mapping(target = "fechaCompra", ignore = true)
     @Mapping(target = "nombreComprador", ignore = true)
+    @Mapping(target = "emailComprador", ignore = true)
     @Mapping(target = "dniComprador", ignore = true)
     Entrada toEntity(EntradaInputDto entradaInputDto);
 

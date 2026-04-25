@@ -21,6 +21,7 @@ public class Evento {
     private String descripcion;
     private LocalDateTime fecha;
     private boolean aceptado;
+    private String foto;
 
     @ManyToOne
     @JoinColumn(name = "tipo_evento_id")

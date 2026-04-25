@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -56,11 +57,12 @@ public class RecintoServiceImpl implements RecintoService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Recinto recinto = this.findById(id);
         // comprobar con y sin esto
         recinto.getZonas()
                 .forEach(zona -> zona.setRecinto(null));
-        repository.delete(this.findById(id));
+        repository.delete(recinto);
     }
 }

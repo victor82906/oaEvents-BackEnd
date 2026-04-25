@@ -91,8 +91,17 @@
             display: block;
         }
 
+        /* Nuevo estilo para datos secundarios como el email */
+        .sub-value {
+            font-size: 14px;
+            color: #555555;
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* Reducido a 22px para que quepan bien las 3 columnas */
         .value-highlight {
-            font-size: 26px;
+            font-size: 22px;
             color: #000000;
         }
 
@@ -105,7 +114,7 @@
 
         .grid-table td {
             padding: 0;
-            width: 50%;
+            /* Se quitará el ancho fijo aquí para ponerlo en línea según necesitemos */
         }
 
         /* Imagen del QR */
@@ -149,15 +158,20 @@
                 <div class="data-group">
                     <span class="label">Titular de la Entrada</span>
                     <span class="value" th:text="${nombreComprador} + ' - DNI: ' + ${dniComprador}">Juan Pérez - 12345678Z</span>
+                    <span class="sub-value" th:text="${emailComprador}">correo@ejemplo.com</span>
                 </div>
 
                 <table class="grid-table">
                     <tr>
-                        <td>
+                        <td style="width: 33%;">
+                            <span class="label">Zona</span>
+                            <span class="value value-highlight" th:text="${numeroZona}">1</span>
+                        </td>
+                        <td style="width: 33%;">
                             <span class="label">Acceso</span>
                             <span class="value value-highlight" th:text="'Puerta ' + ${puerta}">Puerta A</span>
                         </td>
-                        <td>
+                        <td style="width: 33%;">
                             <span class="label">Importe</span>
                             <span class="value value-highlight" th:text="${precio} + ' €'">35.00 €</span>
                         </td>
@@ -172,11 +186,11 @@
                 <div th:if="${!pista}">
                     <table class="grid-table" style="margin-top: 15px; padding: 15px; background-color: #eeeeee; border-radius: 4px;">
                         <tr>
-                            <td style="padding-left: 15px;">
+                            <td style="padding-left: 15px; width: 50%;">
                                 <span class="label">Fila</span>
                                 <span class="value" style="font-size: 20px;" th:text="${fila}">12</span>
                             </td>
-                            <td>
+                            <td style="width: 50%;">
                                 <span class="label">Asiento</span>
                                 <span class="value" style="font-size: 20px;" th:text="${numero}">45</span>
                             </td>

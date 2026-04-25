@@ -40,6 +40,15 @@ public class LocalidadController {
         );
     }
 
+    @GetMapping("/{zonaEventoId}/libres")
+    public ResponseEntity<List<LocalidadOutputDto>> findLocalidadesLibres(@PathVariable Long zonaEventoId) {
+        return ResponseEntity.ok(
+                service.findLocalidadesLibresByZonaEventoId(zonaEventoId).stream()
+                        .map(mapper::toDto)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<LocalidadOutputDto> findById(@PathVariable Long id) {
         Localidad entity = service.findById(id);

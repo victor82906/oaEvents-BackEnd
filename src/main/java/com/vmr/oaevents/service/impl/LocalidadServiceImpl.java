@@ -4,8 +4,10 @@ import com.vmr.oaevents.model.Localidad;
 import com.vmr.oaevents.model.Zona;
 import com.vmr.oaevents.repository.LocalidadRepository;
 import com.vmr.oaevents.service.LocalidadService;
+import com.vmr.oaevents.service.ZonaEventoService;
 import com.vmr.oaevents.service.ZonaService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class LocalidadServiceImpl implements LocalidadService {
 
     private final LocalidadRepository repository;
     private final ZonaService zonaService;
+    private final ZonaEventoService zonaEventoService;
 
     @Override
     public List<Localidad> findAll() {
@@ -27,6 +30,12 @@ public class LocalidadServiceImpl implements LocalidadService {
     public List<Localidad> findByZonaId(Long zonaId) {
         zonaService.findById(zonaId); // Validar existencia de la zona
         return repository.findByZonaId(zonaId);
+    }
+
+    @Override
+    public List<Localidad> findLocalidadesLibresByZonaEventoId(Long zonaEventoId) {
+        zonaEventoService.findById(zonaEventoId);
+        return repository.findLocalidadesLibresByZonaEventoId(zonaEventoId);
     }
 
     @Override
@@ -51,11 +60,12 @@ public class LocalidadServiceImpl implements LocalidadService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Localidad localidad = this.findById(id);
         // comprobar con y sin esto
         localidad.getEntradas()
                 .forEach(entrada -> entrada.setLocalidad(null));
-        repository.delete(this.findById(id));
+        repository.delete(localidad);
     }
 }

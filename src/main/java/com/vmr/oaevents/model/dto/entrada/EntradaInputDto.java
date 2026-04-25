@@ -16,6 +16,8 @@ public class EntradaInputDto {
 
     private String nombreComprador;
 
+    private String emailComprador;
+
     private String dniComprador;
 
     private Double precio;

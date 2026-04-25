@@ -14,6 +14,7 @@ public class EntradaOutputDto {
     private LocalDateTime fechaCompra;
     private LocalDateTime fechaEvento;
     private String nombreComprador;
+    private String emailComprador;
     private String dniComprador;
     private double precio;
     private Long localidad_id;

@@ -10,15 +10,18 @@ import com.vmr.oaevents.service.EventoService;
 import com.vmr.oaevents.service.TipoEventoService;
 import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class EventoServiceImpl implements EventoService {
     private final TipoEventoService tipoEventoService;
     private final EmpresaService empresaService;
     private final ZonaEventoService zonaEventoService;
+    private final ImagenService imagenService;
 
     @Override
     public List<Evento> findAll() {
@@ -74,6 +78,18 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
+    public Page<Evento> findAceptadosByRangoFechas(LocalDate fechaInicio, LocalDate fechaFin, Pageable pageable) {
+        if (fechaInicio.isAfter(fechaFin)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha fin");
+        }
+
+        LocalDateTime start = fechaInicio.atStartOfDay();
+        LocalDateTime end = fechaFin.atTime(LocalTime.MAX);
+        
+        return repository.findByAceptadoAndFechaBetween(true, start, end, pageable);
+    }
+
+    @Override
     public Evento findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado con id: " + id));
@@ -95,17 +111,38 @@ public class EventoServiceImpl implements EventoService {
         entity.setId(id);
         entity.setEmpresa(evento.getEmpresa());
         entity.setAceptado(evento.isAceptado());
+        entity.setFoto(evento.getFoto());
         TipoEvento tipoEvento = tipoEventoService.findById(entity.getTipoEvento().getId());
         entity.setTipoEvento(tipoEvento);
         return repository.save(entity);
     }
 
     @Override
+    public Evento addFoto(Long id, MultipartFile archivo) {
+        Evento evento = this.findById(id);
+        
+        if (evento.getFoto() != null && !evento.getFoto().isEmpty()) {
+            imagenService.eliminarImagen(evento.getFoto());
+        }
+
+        String ruta = imagenService.guardarImagen(archivo);
+        evento.setFoto(ruta);
+
+        return repository.save(evento);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         Evento evento = this.findById(id);
+        
+        if (!Objects.isNull(evento.getFoto()) && !evento.getFoto().isEmpty()) {
+            imagenService.eliminarImagen(evento.getFoto());
+        }
+        
         evento.getZonasEvento().stream()
                 .map(ZonaEvento::getId)
                 .forEach(this.zonaEventoService::deleteById);
-        repository.delete(this.findById(id));
+        repository.delete(evento);
     }
 }

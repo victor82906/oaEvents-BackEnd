@@ -16,6 +16,7 @@ public class Zona {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String numero;
     private String coordenadas;
     private String puertaEntrada;
     private boolean pista;

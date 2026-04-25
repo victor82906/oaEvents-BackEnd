@@ -51,6 +51,6 @@ public class RolServiceImpl implements RolService {
         if (!rol.getUsuarios().isEmpty()) {
             throw new DataIntegrityViolationException("Tiene Usuarios asociados");
         }
-        repository.delete(this.findById(id));
+        repository.delete(rol);
     }
 }

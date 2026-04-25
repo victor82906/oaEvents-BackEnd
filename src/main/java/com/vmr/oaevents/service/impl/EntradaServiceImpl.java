@@ -1,12 +1,13 @@
 package com.vmr.oaevents.service.impl;
 
 import com.vmr.oaevents.model.*;
+import com.vmr.oaevents.model.dto.entrada.EntradaCompraInputDto;
+import com.vmr.oaevents.model.dto.entrada.EntradaCompraLogueadoInputDto;
 import com.vmr.oaevents.repository.EntradaRepository;
-import com.vmr.oaevents.service.CompradorService;
-import com.vmr.oaevents.service.EntradaService;
-import com.vmr.oaevents.service.LocalidadService;
-import com.vmr.oaevents.service.ZonaEventoService;
+import com.vmr.oaevents.security.AuthenticationFacade;
+import com.vmr.oaevents.service.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,11 @@ public class EntradaServiceImpl implements EntradaService {
     private final LocalidadService localidadService;
     private final ZonaEventoService zonaEventoService;
     private final CompradorService compradorService;
+    private final EventoService eventoService;
     private final QrGeneratorService qrGeneratorService;
     private final PdfService pdfService;
+    private final AuthenticationFacade authenticationFacade;
+    private int NUM_ENTRADAS_VALIDAS = 8;
 
     @Override
     public List<Entrada> findAll() {
@@ -40,7 +44,6 @@ public class EntradaServiceImpl implements EntradaService {
 
     @Override
     public Page<Entrada> findByCompradorId(Long compradorId, Pageable pageable) {
-        // Valida que el comprador exista (opcional pero recomendable)
         compradorService.findById(compradorId);
         return repository.findByCompradorId(compradorId, pageable);
     }
@@ -52,10 +55,18 @@ public class EntradaServiceImpl implements EntradaService {
     }
 
     @Override
-    public Entrada save(Entrada entity) {
+    @Transactional
+    public Entrada save(Entrada entity, boolean logueado) {
         Localidad localidad = localidadService.findById(entity.getLocalidad().getId());
         ZonaEvento zonaEvento = zonaEventoService.findById(entity.getZonaEvento().getId());
-        Comprador comprador = compradorService.findById(entity.getComprador().getId());
+        Comprador comprador;
+        if(logueado) {
+            comprador = authenticationFacade.getAuthenticatedComprador();
+            entity.setComprador(comprador);
+        } else {
+            comprador = entity.getComprador();
+            entity.setComprador(null);
+        }
 
         String codigo = UUID.randomUUID().toString();
         String rutaQr = qrGeneratorService.generateQr(codigo);
@@ -68,10 +79,10 @@ public class EntradaServiceImpl implements EntradaService {
         entity.setQr(qr);
         entity.setLocalidad(localidad);
         entity.setZonaEvento(zonaEvento);
-        entity.setComprador(comprador);
         entity.setFechaCompra(LocalDateTime.now());
-        entity.setFechaEvento(entity.getZonaEvento().getEvento().getFecha());
+        entity.setFechaEvento(zonaEvento.getEvento().getFecha());
         entity.setNombreComprador(comprador.getNombre());
+        entity.setEmailComprador(comprador.getEmail());
         entity.setDniComprador(comprador.getDni());
         entity.setPrecio(zonaEvento.getPrecio());
         return repository.save(entity);
@@ -105,6 +116,7 @@ public class EntradaServiceImpl implements EntradaService {
         datos.put("fechaCompra", entrada.getFechaCompra() != null ? entrada.getFechaCompra().format(formatter) : "");
         datos.put("fechaEvento", entrada.getFechaEvento() != null ? entrada.getFechaEvento().format(formatter) : "");
         datos.put("nombreComprador", entrada.getNombreComprador());
+        datos.put("emailComprador", entrada.getEmailComprador());
         datos.put("dniComprador", entrada.getDniComprador());
         datos.put("precio", String.format("%.2f", entrada.getPrecio()));
 
@@ -118,6 +130,7 @@ public class EntradaServiceImpl implements EntradaService {
 
         if (!Objects.isNull(entrada.getZonaEvento()) && !Objects.isNull(entrada.getZonaEvento().getZona())) {
             datos.put("puerta", entrada.getZonaEvento().getZona().getPuertaEntrada());
+            datos.put("numeroZona", entrada.getZonaEvento().getZona().getNumero());
             pista = entrada.getZonaEvento().getZona().isPista();
         } else {
             datos.put("puerta", "N/A");
@@ -140,4 +153,87 @@ public class EntradaServiceImpl implements EntradaService {
 
         return pdfService.generarPdf("entrada", datos);
     }
+
+    @Override
+    @Transactional
+    public List<Long> procesarPagoLogueado(EntradaCompraLogueadoInputDto entradaCompraLogueadoInputDto){
+        // validar tarjeta credito
+
+        List<Long> entrada_ids = new ArrayList<>();
+        eventoService.findById(entradaCompraLogueadoInputDto.getEvento_id());
+        ZonaEvento zonaEvento = zonaEventoService.findById(entradaCompraLogueadoInputDto.getZonaEvento_id());
+
+        List<Long> localidad_ids = entradaCompraLogueadoInputDto.getLocalidad_ids();
+        if(localidad_ids.size() > NUM_ENTRADAS_VALIDAS){
+            throw new IllegalArgumentException("No se pueden comprar mas de " + NUM_ENTRADAS_VALIDAS + " entradas seguidas");
+        }
+
+        List<Localidad> localidadesLibres = localidadService.findLocalidadesLibresByZonaEventoId(zonaEvento.getId());
+        List<Long> idsLibres = localidadesLibres.stream().map(Localidad::getId).toList();
+
+        localidad_ids.forEach(id -> {
+            if (!idsLibres.contains(id)) {
+                throw new IllegalArgumentException("Alguna de las localidades seleccionada no esta libre");
+            }
+        });
+
+        localidad_ids.forEach(id -> {
+            Entrada entrada = new Entrada();
+            Localidad localidad = new Localidad();
+            localidad.setId(id);
+
+            entrada.setLocalidad(localidad);
+            entrada.setZonaEvento(zonaEvento);
+
+            entrada = this.save(entrada, true);
+            entrada_ids.add(entrada.getId());
+        });
+
+        return entrada_ids;
+    }
+
+    @Override
+    @Transactional
+    public List<Long> procesarPago(EntradaCompraInputDto entradaCompraInputDto) {
+        // validar tarjeta credito
+
+        List<Long> entrada_ids = new ArrayList<>();
+        eventoService.findById(entradaCompraInputDto.getEvento_id());
+        ZonaEvento zonaEvento = zonaEventoService.findById(entradaCompraInputDto.getZonaEvento_id());
+
+        List<Long> localidad_ids = entradaCompraInputDto.getLocalidad_ids();
+        if(localidad_ids.size() > NUM_ENTRADAS_VALIDAS){
+            throw new IllegalArgumentException("No se pueden comprar mas de " + NUM_ENTRADAS_VALIDAS + " entradas seguidas");
+        }
+
+        List<Localidad> localidadesLibres = localidadService.findLocalidadesLibresByZonaEventoId(zonaEvento.getId());
+        List<Long> idsLibres = localidadesLibres.stream().map(Localidad::getId).toList();
+
+        localidad_ids.forEach(id -> {
+            if (!idsLibres.contains(id)) {
+                throw new IllegalArgumentException("Alguna de las localidades seleccionada no esta libre");
+            }
+        });
+
+        Comprador comprador = new Comprador();
+        comprador.setNombre(entradaCompraInputDto.getNombreComprador());
+        comprador.setEmail(entradaCompraInputDto.getEmailComprador());
+        comprador.setDni(entradaCompraInputDto.getDniComprador());
+
+        localidad_ids.forEach(id -> {
+            Entrada entrada = new Entrada();
+            Localidad localidad = new Localidad();
+            localidad.setId(id);
+
+            entrada.setLocalidad(localidad);
+            entrada.setZonaEvento(zonaEvento);
+            entrada.setComprador(comprador);
+
+            entrada = this.save(entrada, false);
+            entrada_ids.add(entrada.getId());
+        });
+
+        return entrada_ids;
+    }
+
 }

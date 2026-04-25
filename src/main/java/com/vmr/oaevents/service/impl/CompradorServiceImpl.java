@@ -7,6 +7,7 @@ import com.vmr.oaevents.service.RolService;
 import com.vmr.oaevents.service.UsuarioService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -73,12 +73,13 @@ public class CompradorServiceImpl implements CompradorService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Comprador comprador = this.findById(id);
         // comprobar con y sin esto
         comprador.getEntradas()
                 .forEach(entrada -> entrada.setComprador(null));
-        repository.delete(this.findById(id));
+        repository.delete(comprador);
     }
 
     @Override

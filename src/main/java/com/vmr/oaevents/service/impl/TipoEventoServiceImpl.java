@@ -45,6 +45,6 @@ public class TipoEventoServiceImpl implements TipoEventoService {
         if (!tipoEvento.getEventos().isEmpty()) {
             throw new DataIntegrityViolationException("Tiene Eventos asociados");
         }
-        repository.delete(this.findById(id));
+        repository.delete(tipoEvento);
     }
 }

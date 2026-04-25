@@ -14,7 +14,7 @@ import java.nio.file.Path;
 @Service
 public class QrGeneratorService {
 
-    @Value("${uploads/qrs/}")
+    @Value("${qrs.folder}")
     private String RUTA_CARPETA;
 
     public String generateQr(String codigo){

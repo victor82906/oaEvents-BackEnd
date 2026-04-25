@@ -21,4 +21,6 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     Page<Evento> findByFechaBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
+    Page<Evento> findByAceptadoAndFechaBetween(boolean aceptado, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
 }
