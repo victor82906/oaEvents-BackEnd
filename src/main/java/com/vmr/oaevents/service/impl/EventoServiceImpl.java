@@ -5,10 +5,10 @@ import com.vmr.oaevents.model.Evento;
 import com.vmr.oaevents.model.TipoEvento;
 import com.vmr.oaevents.model.ZonaEvento;
 import com.vmr.oaevents.repository.EventoRepository;
+import com.vmr.oaevents.repository.ZonaEventoRepository;
 import com.vmr.oaevents.service.EmpresaService;
 import com.vmr.oaevents.service.EventoService;
 import com.vmr.oaevents.service.TipoEventoService;
-import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class EventoServiceImpl implements EventoService {
     private final EventoRepository repository;
     private final TipoEventoService tipoEventoService;
     private final EmpresaService empresaService;
-    private final ZonaEventoService zonaEventoService;
+        private final ZonaEventoRepository zonaEventoRepository;
     private final ImagenService imagenService;
 
     @Override
@@ -63,6 +63,12 @@ public class EventoServiceImpl implements EventoService {
     @Override
     public Page<Evento> findByTitulo(String titulo, Pageable pageable) {
         return repository.findByTituloContainingIgnoreCase(titulo, pageable);
+    }
+
+    @Override
+    public Page<Evento> findByEmpresaIdAndTitulo(Long empresaId, String titulo, Pageable pageable) {
+        empresaService.findById(empresaId);
+        return repository.findByEmpresaIdAndTituloContainingIgnoreCase(empresaId, titulo, pageable);
     }
 
     @Override
@@ -142,7 +148,13 @@ public class EventoServiceImpl implements EventoService {
         
         evento.getZonasEvento().stream()
                 .map(ZonaEvento::getId)
-                .forEach(this.zonaEventoService::deleteById);
+                .forEach(this.zonaEventoRepository::deleteById);
         repository.delete(evento);
+    }
+
+    @Override
+    public boolean isPropietario(Long eventoId, Long empresaId) {
+        Evento evento = this.findById(eventoId);
+        return evento.getEmpresa() != null && evento.getEmpresa().getId().equals(empresaId);
     }
 }

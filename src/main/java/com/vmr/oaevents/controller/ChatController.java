@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class ChatController {
     private final ChatMapper mapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<List<ChatOutputDto>> findAll() {
         return ResponseEntity.ok(
                 service.findAll().stream()
@@ -34,6 +36,7 @@ public class ChatController {
     }
 
     @GetMapping("/conversacion/{emisorId}/{receptorId}")
+    @PreAuthorize("principal.id == #emisorId or principal.id == #receptorId")
     public ResponseEntity<Page<ChatOutputDto>> findConversation(
             @PathVariable Long emisorId,
             @PathVariable Long receptorId,
@@ -43,12 +46,14 @@ public class ChatController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
     public ResponseEntity<ChatOutputDto> findById(@PathVariable Long id) {
         Chat entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ChatOutputDto> create(@Valid @RequestBody ChatInputDto inputDto) {
         Chat entity = mapper.toEntity(inputDto);
         entity = service.save(entity);
@@ -56,6 +61,7 @@ public class ChatController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
     public ResponseEntity<ChatOutputDto> update(@PathVariable Long id, @Valid @RequestBody ChatInputDto inputDto) {
         Chat entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -63,6 +69,7 @@ public class ChatController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

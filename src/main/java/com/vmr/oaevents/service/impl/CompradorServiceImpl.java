@@ -84,12 +84,12 @@ public class CompradorServiceImpl implements CompradorService {
 
     @Override
     public boolean existByDni(String dni){
-        return repository.existByDni(dni);
+        return repository.existsByDni(dni);
     }
 
     @Override
     public boolean existByDni(String dni, Long id) {
-        return repository.existByDniAndIdNot(dni, id);
+        return repository.existsByDniAndIdNot(dni, id);
     }
 
 }

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ZonaEventoController {
     private final ZonaEventoMapper mapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<List<ZonaEventoOutputDto>> findAll() {
         return ResponseEntity.ok(
                 service.findAll().stream()
@@ -47,6 +49,7 @@ public class ZonaEventoController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#inputDto.evento_id, principal.id))")
     public ResponseEntity<ZonaEventoOutputDto> create(@Valid @RequestBody ZonaEventoInputDto inputDto) {
         ZonaEvento entity = mapper.toEntity(inputDto);
         entity = service.save(entity);
@@ -54,6 +57,7 @@ public class ZonaEventoController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @zonaEventoService.isPropietario(#id, principal.id))")
     public ResponseEntity<ZonaEventoOutputDto> update(@PathVariable Long id, @Valid @RequestBody ZonaEventoInputDto inputDto) {
         ZonaEvento entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -61,6 +65,7 @@ public class ZonaEventoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @zonaEventoService.isPropietario(#id, principal.id))")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

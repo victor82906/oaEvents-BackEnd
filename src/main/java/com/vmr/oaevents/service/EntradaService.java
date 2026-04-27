@@ -19,4 +19,5 @@ public interface EntradaService {
     byte[] descargarEntradaPdf(Long id);
     List<Long> procesarPagoLogueado(EntradaCompraLogueadoInputDto entradaCompraLogueadoInputDto);
     List<Long> procesarPago(EntradaCompraInputDto entradaCompraInputDto);
+    boolean isComprador(Long entradaId, Long usuarioId);
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class EventoController {
     private final EventoMapper mapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<List<EventoOutputDto>> findAll() {
         return ResponseEntity.ok(
                 service.findAll().stream()
@@ -37,6 +39,7 @@ public class EventoController {
     }
 
     @GetMapping("/page")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Page<EventoOutputDto>> findAllPaged(Pageable pageable) {
         Page<Evento> page = service.findAll(pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
@@ -49,30 +52,35 @@ public class EventoController {
     }
 
     @GetMapping("/pendientes/page")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Page<EventoOutputDto>> findAllPendientes(Pageable pageable) {
         Page<Evento> page = service.findAllByAceptado(false, pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/empresa/{empresaId}/page")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #empresaId")
     public ResponseEntity<Page<EventoOutputDto>> findByEmpresaId(@PathVariable Long empresaId, Pageable pageable) {
         Page<Evento> page = service.findByEmpresaId(empresaId, pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/empresa/{empresaId}/aceptados/page")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #empresaId")
     public ResponseEntity<Page<EventoOutputDto>> findAceptadosByEmpresaId(@PathVariable Long empresaId, Pageable pageable) {
         Page<Evento> page = service.findByEmpresaIdAndAceptado(empresaId, true, pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/empresa/{empresaId}/pendientes/page")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #empresaId")
     public ResponseEntity<Page<EventoOutputDto>> findPendientesByEmpresaId(@PathVariable Long empresaId, Pageable pageable) {
         Page<Evento> page = service.findByEmpresaIdAndAceptado(empresaId, false, pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/buscar/titulo/page")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Page<EventoOutputDto>> findByTitulo(
             @RequestParam String titulo, 
             Pageable pageable) {
@@ -80,7 +88,18 @@ public class EventoController {
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
+    @GetMapping("/empresa/{empresaId}/buscar/titulo/page")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #empresaId")
+    public ResponseEntity<Page<EventoOutputDto>> findByEmpresaIdAndTitulo(
+            @PathVariable Long empresaId,
+            @RequestParam String titulo, 
+            Pageable pageable) {
+        Page<Evento> page = service.findByEmpresaIdAndTitulo(empresaId, titulo, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
     @GetMapping("/buscar/fechas/page")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Page<EventoOutputDto>> findByFechas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio, 
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
@@ -105,6 +124,7 @@ public class EventoController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('RECINTO', 'EMPRESA')")
     public ResponseEntity<EventoOutputDto> create(@Valid @RequestBody EventoInputDto inputDto) {
         Evento entity = mapper.toEntity(inputDto);
         entity = service.save(entity);
@@ -112,6 +132,7 @@ public class EventoController {
     }
 
     @PostMapping("/{id}/foto")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
     public ResponseEntity<EventoOutputDto> addFoto(
             @PathVariable Long id, 
             @RequestParam("archivo") MultipartFile foto) {
@@ -120,6 +141,7 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
     public ResponseEntity<EventoOutputDto> update(@PathVariable Long id, @Valid @RequestBody EventoInputDto inputDto) {
         Evento entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -127,6 +149,7 @@ public class EventoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,6 +62,7 @@ public class EmpresaController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<EmpresaOutputDto> findById(@PathVariable Long id) {
         Empresa entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
@@ -77,6 +79,7 @@ public class EmpresaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<EmpresaOutputDto> update(@PathVariable Long id, @Valid @RequestBody EmpresaInputDto inputDto) {
         Empresa entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -96,6 +99,7 @@ public class EmpresaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

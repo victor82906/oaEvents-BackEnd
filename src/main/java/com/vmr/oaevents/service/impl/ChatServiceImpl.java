@@ -61,4 +61,10 @@ public class ChatServiceImpl implements ChatService {
         this.findById(id);
         repository.delete(this.findById(id));
     }
+
+    @Override
+    public boolean isEmisor(Long chatId, Long usuarioId) {
+        Chat chat = this.findById(chatId);
+        return chat.getEmisor().getId().equals(usuarioId);
+    }
 }

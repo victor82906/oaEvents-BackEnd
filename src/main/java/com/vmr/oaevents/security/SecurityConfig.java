@@ -47,84 +47,64 @@ public class SecurityConfig {
                                 // fotos
                                 .requestMatchers("/uploads/**").permitAll()
 
-                                // ayuntamiento controller
-                                .requestMatchers(HttpMethod.GET, "/ayuntamiento").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/ayuntamiento").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/ayuntamiento/{id}").hasRole("ADMIN")
-                                .requestMatchers("/ayuntamiento/{id}/**").hasAnyRole("AYUNTAMIENTO", "ADMIN")
-
-                                // cementerio controller
-                                .requestMatchers(HttpMethod.GET, "/cementerio/{id}/tarifa").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/cementerio/{id}/tarifa").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/cementerio/{id}/zona").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/cementerio/{id}/zona").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/cementerio/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/cementerio/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/cementerio/**").hasRole("ADMIN")
-
-                                // ciudadano controller
-                                .requestMatchers(HttpMethod.POST, "/ciudadano").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/ciudadano").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/ciudadano/**").hasRole("ADMIN")
-                                .requestMatchers("/ciudadano/{id}/**").authenticated()
-
-                                // concesion controller
-                                .requestMatchers(HttpMethod.GET, "/concesion").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/concesion/{id}").authenticated()
-                                .requestMatchers(HttpMethod.PUT, "/concesion/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/concesion/{id}").authenticated()
-
-                                // difunto controller
-                                .requestMatchers(HttpMethod.GET, "/difunto").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/difunto/**").hasRole("ADMIN")
-                                .requestMatchers("/difunto/{id}/**").authenticated()
-
-                                // parcela controller
-                                .requestMatchers(HttpMethod.GET, "/parcela").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/parcela/{id}").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/parcela/{id}/ayuntamiento").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/parcela/{id}/zona").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/parcela/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/parcela/**").hasRole("ADMIN")
-                                .requestMatchers("/parcela/{id}/**").authenticated()
-
-                                // servicio controller
-                                .requestMatchers(HttpMethod.GET, "/servicio/{id}").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/servicio").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/servicio/{id}/realizado").hasAnyRole("ADMIN", "AYUNTAMIENTO")
-                                .requestMatchers(HttpMethod.PUT, "/servicio/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/servicio/**").hasRole("ADMIN")
-
-                                // tarifa controller
-                                .requestMatchers(HttpMethod.GET, "/tarifa").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/tarifa/{id}").authenticated()
-                                .requestMatchers("/tarifa/{id}/**").authenticated()
-
-                                // tipo servicio controller
-                                .requestMatchers(HttpMethod.GET, "/tipo-servicio/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/tipo-servicio").hasAnyRole("ADMIN", "AYUNTAMIENTO")
-                                .requestMatchers(HttpMethod.PUT, "/tipo-servicio/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/tipo-servicio/**").hasRole("ADMIN")
-
-                                // tipo zona controller
-                                .requestMatchers(HttpMethod.GET, "/tipo-zona/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/tipo-zona").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/tipo-zona/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/tipo-zona/**").hasRole("ADMIN")
-
-                                // usuario controller
-                                .requestMatchers(HttpMethod.GET, "/usuario/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/usuario/**").authenticated()
-
-                                // zona controller
-                                .requestMatchers(HttpMethod.GET, "/zona/{id}/parcela").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/zona/{id}/parcela/libre").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/zona/{id}/cementerio").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/zona/{id}").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/zona").hasRole("ADMIN")
-                                .requestMatchers("/zona/**").authenticated()
-
                                 .requestMatchers("/auth/login").permitAll()
+
+                                // Comprador
+                                .requestMatchers(HttpMethod.POST, "/comprador").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/comprador", "/comprador/page", "/comprador/buscar/page").hasRole("RECINTO")
+
+                                // Empresa
+                                .requestMatchers(HttpMethod.POST, "/empresa").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/empresa", "/empresa/page", "/empresa/activas/page", "/empresa/inactivas/page", "/empresa/buscar/page").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.PATCH, "/empresa/*/activar", "/empresa/*/desactivar").hasRole("RECINTO")
+
+                                // Entrada
+                                .requestMatchers(HttpMethod.POST, "/entrada/comprar").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/entrada/zona-evento/*/localidades-libres").permitAll()
+
+                                // Evento
+                                .requestMatchers(HttpMethod.GET, "/evento/aceptados/page").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/evento/buscar/aceptados/fechas/page").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/evento/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/evento", "/evento/page", "/evento/pendientes/page", "/evento/buscar/titulo/page", "/evento/buscar/fechas/page").hasRole("RECINTO")
+
+                                // Localidad
+                                .requestMatchers(HttpMethod.GET, "/localidad", "/localidad/page").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.GET, "/localidad/zona/*", "/localidad/*/libres", "/localidad/*").permitAll()
+
+                                // Qr
+                                .requestMatchers(HttpMethod.POST, "/qr/check").hasAnyRole("RECINTO", "VALIDADOR")
+                                .requestMatchers("/qr", "/qr/**").hasRole("RECINTO")
+
+                                // Recinto
+                                .requestMatchers(HttpMethod.GET, "/recinto", "/recinto/*").permitAll()
+                                .requestMatchers("/recinto", "/recinto/**").hasRole("RECINTO")
+
+                                // Rol
+                                .requestMatchers(HttpMethod.GET, "/rol", "/rol/*").permitAll()
+                                .requestMatchers("/rol", "/rol/**").hasRole("RECINTO")
+
+                                // TipoEvento
+                                .requestMatchers(HttpMethod.GET, "/tipo-evento", "/tipo-evento/*").permitAll()
+                                .requestMatchers("/tipo-evento", "/tipo-evento/**").hasRole("RECINTO")
+
+                                // Usuario
+                                .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.POST, "/usuario").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.PUT, "/usuario/*").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.DELETE, "/usuario/*").hasRole("RECINTO")
+
+                                // Validador
+                                .requestMatchers("/validador", "/validador/**").hasRole("RECINTO")
+
+                                // Zona
+                                .requestMatchers(HttpMethod.GET, "/zona/recinto/*", "/zona/*").permitAll()
+                                .requestMatchers("/zona", "/zona/**").hasRole("RECINTO")
+
+                                // ZonaEvento
+                                .requestMatchers(HttpMethod.GET, "/zona-evento", "/zona-evento/page").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.GET, "/zona-evento/evento/*", "/zona-evento/*").permitAll()
+
                                 .anyRequest().authenticated()
                         )
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

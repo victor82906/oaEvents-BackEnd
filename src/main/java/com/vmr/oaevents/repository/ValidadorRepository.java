@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ValidadorRepository extends JpaRepository<Validador, Long> {
 
-    boolean existByDni(String dni);
+    boolean existsByDni(String dni);
 
-    boolean existByDniAndIdNot(String dni, Long id);
+    boolean existsByDniAndIdNot(String dni, Long id);
 
 }

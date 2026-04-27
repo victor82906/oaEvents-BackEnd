@@ -2,8 +2,6 @@ package com.vmr.oaevents.service.impl;
 
 import com.vmr.oaevents.model.Usuario;
 import com.vmr.oaevents.model.dto.usuario.CambiarContrasenaDto;
-import com.vmr.oaevents.model.dto.usuario.UsuarioOutputDto;
-import com.vmr.oaevents.model.mapper.UsuarioMapper;
 import com.vmr.oaevents.repository.UsuarioRepository;
 import com.vmr.oaevents.service.UsuarioService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,13 +16,12 @@ import java.util.List;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository repository;
-    private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UsuarioOutputDto findByEmail(String email){
-        return usuarioMapper.toDto(repository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado.")));
+    public Usuario findByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado."));
     }
 
     @Override
@@ -59,12 +56,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public boolean existByEmail(String email){
-        return repository.existByEmail(email);
+        return repository.existsByEmail(email);
     }
 
     @Override
     public boolean existByEmail(String email, Long id){
-        return repository.existByEmailAndIdNot(email, id);
+        return repository.existsByEmailAndIdNot(email, id);
     }
 
     @Override

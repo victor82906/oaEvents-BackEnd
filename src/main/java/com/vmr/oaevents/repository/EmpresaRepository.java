@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 
-    boolean existByCif(String cif);
+    boolean existsByCif(String cif);
 
-    boolean existByCifAndIdNot(String cif, Long id);
+    boolean existsByCifAndIdNot(String cif, Long id);
 
     Page<Empresa> findByActiva(boolean activa, Pageable pageable);
 

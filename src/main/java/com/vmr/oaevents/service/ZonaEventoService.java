@@ -10,4 +10,5 @@ public interface ZonaEventoService {
     ZonaEvento save(ZonaEvento entity);
     ZonaEvento update(Long id, ZonaEvento entity);
     void deleteById(Long id);
+    boolean isPropietario(Long zonaEventoId, Long empresaId);
 }

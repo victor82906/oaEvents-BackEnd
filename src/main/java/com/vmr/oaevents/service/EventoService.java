@@ -15,6 +15,7 @@ public interface EventoService {
     Page<Evento> findByEmpresaId(Long empresaId, Pageable pageable);
     Page<Evento> findByEmpresaIdAndAceptado(Long empresaId, boolean aceptado, Pageable pageable);
     Page<Evento> findByTitulo(String titulo, Pageable pageable);
+    Page<Evento> findByEmpresaIdAndTitulo(Long empresaId, String titulo, Pageable pageable);
     Page<Evento> findByRangoFechas(LocalDate fechaInicio, LocalDate fechaFin, Pageable pageable);
     Page<Evento> findAceptadosByRangoFechas(LocalDate fechaInicio, LocalDate fechaFin, Pageable pageable);
     Evento findById(Long id);
@@ -22,4 +23,5 @@ public interface EventoService {
     Evento update(Long id, Evento entity);
     Evento addFoto(Long id, MultipartFile archivo);
     void deleteById(Long id);
+    boolean isPropietario(Long eventoId, Long empresaId);
 }

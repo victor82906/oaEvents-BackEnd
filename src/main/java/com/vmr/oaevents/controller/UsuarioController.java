@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,7 +61,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/{id}/contrasena")
-    public ResponseEntity<Map<String, String>> cambiarCotrasena(@PathVariable Long id, @Valid @RequestBody CambiarContrasenaDto cambiarContrasenaDto){
+    @PreAuthorize("principal.id == #id")
+    public ResponseEntity<Map<String, String>> cambiarContrasena(@PathVariable Long id, @Valid @RequestBody CambiarContrasenaDto cambiarContrasenaDto){
         service.cambiarContrasena(id, cambiarContrasenaDto);
         return ResponseEntity.ok(Map.of("mensaje", "Contraseña cambiada correctamente"));
     }

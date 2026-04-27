@@ -236,4 +236,10 @@ public class EntradaServiceImpl implements EntradaService {
         return entrada_ids;
     }
 
+    @Override
+    public boolean isComprador(Long entradaId, Long usuarioId) {
+        Entrada entrada = this.findById(entradaId);
+        return entrada.getComprador() != null && entrada.getComprador().getId().equals(usuarioId);
+    }
+
 }

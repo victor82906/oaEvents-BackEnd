@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class EntradaController {
     private final EntradaMapper mapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<List<EntradaOutputDto>> findAll() {
         return ResponseEntity.ok(
                 service.findAll().stream()
@@ -38,24 +40,28 @@ public class EntradaController {
     }
 
     @GetMapping("/page")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Page<EntradaOutputDto>> findAllPaged(Pageable pageable) {
         Page<Entrada> page = service.findAll(pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/comprador/{compradorId}/page")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #compradorId")
     public ResponseEntity<Page<EntradaOutputDto>> findByCompradorId(@PathVariable Long compradorId, Pageable pageable) {
         Page<Entrada> page = service.findByCompradorId(compradorId, pageable);
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or @entradaService.isComprador(#id, principal.id)")
     public ResponseEntity<EntradaOutputDto> findById(@PathVariable Long id) {
         Entrada entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 
     @PostMapping("/comprar/logueado")
+    @PreAuthorize("hasRole('COMPRADOR')")
     public ResponseEntity<List<Long>> comprarEntradasLogueado(@Valid @RequestBody EntradaCompraLogueadoInputDto entradaCompraLogueadoInputDto) {
         return ResponseEntity.ok(service.procesarPagoLogueado(entradaCompraLogueadoInputDto));
     }
@@ -66,6 +72,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{id}/descargar")
+    @PreAuthorize("@entradaService.isComprador(#id, principal.id)")
     public ResponseEntity<byte[]> descargarEntrada(@PathVariable Long id) {
         byte[] pdfBytes = service.descargarEntradaPdf(id);
         
@@ -77,6 +84,7 @@ public class EntradaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<EntradaOutputDto> create(@Valid @RequestBody EntradaInputDto inputDto) {
         Entrada entity = mapper.toEntity(inputDto);
         entity = service.save(entity, false);
@@ -84,6 +92,7 @@ public class EntradaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<EntradaOutputDto> update(@PathVariable Long id, @Valid @RequestBody EntradaInputDto inputDto) {
         Entrada entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -91,6 +100,7 @@ public class EntradaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or @entradaService.isComprador(#id, principal.id)")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

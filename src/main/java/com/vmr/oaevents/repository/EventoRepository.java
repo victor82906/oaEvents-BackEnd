@@ -19,6 +19,8 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     Page<Evento> findByTituloContainingIgnoreCase(String titulo, Pageable pageable);
 
+    Page<Evento> findByEmpresaIdAndTituloContainingIgnoreCase(Long empresaId, String titulo, Pageable pageable);
+
     Page<Evento> findByFechaBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     Page<Evento> findByAceptadoAndFechaBetween(boolean aceptado, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);

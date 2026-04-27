@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface QrRepository extends JpaRepository<Qr, Long> {
+
     Optional<Qr> findByCodigo(String codigo);
+
 }

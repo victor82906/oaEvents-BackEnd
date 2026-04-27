@@ -65,4 +65,12 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
                 .forEach(entrada -> entrada.setZonaEvento(null));
         repository.delete(zonaEvento);
     }
+
+    @Override
+    public boolean isPropietario(Long zonaEventoId, Long empresaId) {
+        ZonaEvento zonaEvento = this.findById(zonaEventoId);
+        return zonaEvento.getEvento() != null 
+               && zonaEvento.getEvento().getEmpresa() != null 
+               && zonaEvento.getEvento().getEmpresa().getId().equals(empresaId);
+    }
 }

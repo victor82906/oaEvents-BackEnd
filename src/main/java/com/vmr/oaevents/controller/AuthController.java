@@ -1,11 +1,14 @@
 package com.vmr.oaevents.controller;
 
+import com.vmr.oaevents.model.Empresa;
 import com.vmr.oaevents.model.Usuario;
 import com.vmr.oaevents.model.dto.usuario.LoginRequest;
 import com.vmr.oaevents.model.dto.usuario.UsuarioOutputDto;
+import com.vmr.oaevents.model.mapper.UsuarioMapper;
 import com.vmr.oaevents.security.AuthenticationFacade;
 import com.vmr.oaevents.security.JwtService;
 import com.vmr.oaevents.security.TokenResponse;
+import com.vmr.oaevents.service.EmpresaService;
 import com.vmr.oaevents.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,8 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationFacade authenticationFacade;
     private final UsuarioService usuarioService;
+    private final EmpresaService empresaService;
+    private final UsuarioMapper usuarioMapper;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
@@ -35,14 +40,23 @@ public class AuthController {
                 )
         );
 
-        Usuario usuario = (Usuario) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(authentication.getName());
+
+        if(usuario.getRol().getNombre().equals("EMPRESA")){
+            Empresa empresa = empresaService.findById(usuario.getId());
+
+            if(!empresa.isActiva()){
+                throw new IllegalArgumentException("La empresa no está activa");
+            }
+        }
+
         String token = jwtService.generateToken(usuario);
         return ResponseEntity.ok(new TokenResponse(token));
     }
 
     @GetMapping("/who")
     public ResponseEntity<UsuarioOutputDto> who(){
-        return ResponseEntity.ok(usuarioService.findByEmail(authenticationFacade.getAuthenticatedUsuario().getEmail()));
+        return ResponseEntity.ok(usuarioMapper.toDto(usuarioService.findByEmail(authenticationFacade.getAuthenticatedUsuario().getEmail())));
     }
 
 }

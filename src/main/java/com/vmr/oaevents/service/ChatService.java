@@ -13,4 +13,5 @@ public interface ChatService {
     Chat save(Chat chat);
     Chat update(Long id, Chat chat);
     void deleteById(Long id);
+    boolean isEmisor(Long chatId, Long usuarioId);
 }

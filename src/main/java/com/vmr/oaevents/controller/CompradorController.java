@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +50,7 @@ public class CompradorController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<CompradorOutputDto> findById(@PathVariable Long id) {
         Comprador entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
@@ -65,6 +67,7 @@ public class CompradorController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<CompradorOutputDto> update(@PathVariable Long id, @Valid @RequestBody CompradorInputDto inputDto) {
         Comprador entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -72,6 +75,7 @@ public class CompradorController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

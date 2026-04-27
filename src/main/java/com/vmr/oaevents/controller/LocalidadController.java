@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class LocalidadController {
     private final LocalidadMapper mapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<List<LocalidadOutputDto>> findAll() {
         return ResponseEntity.ok(
                 service.findAll().stream()
@@ -56,6 +58,7 @@ public class LocalidadController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<LocalidadOutputDto> create(@Valid @RequestBody LocalidadInputDto inputDto) {
         Localidad entity = mapper.toEntity(inputDto);
         entity = service.save(entity);
@@ -63,6 +66,7 @@ public class LocalidadController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<LocalidadOutputDto> update(@PathVariable Long id, @Valid @RequestBody LocalidadInputDto inputDto) {
         Localidad entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -70,6 +74,7 @@ public class LocalidadController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RECINTO')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

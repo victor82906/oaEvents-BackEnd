@@ -105,12 +105,12 @@ public class EmpresaServiceImpl implements EmpresaService {
 
     @Override
     public boolean existByCif(String cif){
-        return repository.existByCif(cif);
+        return repository.existsByCif(cif);
     }
 
     @Override
     public boolean existByCif(String cif, Long id){
-        return repository.existByCifAndIdNot(cif, id);
+        return repository.existsByCifAndIdNot(cif, id);
     }
 
 }

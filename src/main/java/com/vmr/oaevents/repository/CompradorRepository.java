@@ -14,9 +14,9 @@ public interface CompradorRepository extends JpaRepository<Comprador, Long> {
 
     Optional<Comprador> findByEmail(String email);
 
-    boolean existByDni(String dni);
+    boolean existsByDni(String dni);
 
-    boolean existByDniAndIdNot(String dni, Long id);
+    boolean existsByDniAndIdNot(String dni, Long id);
 
     @Query("SELECT c FROM Comprador c WHERE " +
            "LOWER(c.nombre) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
