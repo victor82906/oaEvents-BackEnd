@@ -1,3 +1,4 @@
+/*
 package com.vmr.oaevents.config;
 
 import com.vmr.oaevents.model.Recinto;
@@ -34,3 +35,4 @@ public class DataInitializer implements CommandLineRunner {
 
 
 }
+*/

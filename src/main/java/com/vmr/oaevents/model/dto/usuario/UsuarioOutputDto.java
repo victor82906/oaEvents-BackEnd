@@ -10,7 +10,6 @@ public class UsuarioOutputDto {
 
     private Long id;
     private String email;
-    private String contrasena;
     private String nombre;
     private String telefono;
     private RolOutputDto rol;
