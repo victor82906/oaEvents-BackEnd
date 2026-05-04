@@ -110,7 +110,7 @@ public class EventoController {
 
     @GetMapping("/buscar/aceptados/fechas/page")
     public ResponseEntity<Page<EventoOutputDto>> findAceptadosByFechas(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio, 
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
             Pageable pageable) {
         Page<Evento> page = service.findAceptadosByRangoFechas(fechaInicio, fechaFin, pageable);
@@ -132,7 +132,7 @@ public class EventoController {
     }
 
     @PostMapping("/{id}/foto")
-    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoServiceImpl.isPropietario(#id, principal.id))")
     public ResponseEntity<EventoOutputDto> addFoto(
             @PathVariable Long id, 
             @RequestParam("archivo") MultipartFile foto) {
@@ -141,15 +141,29 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoServiceImpl.isPropietario(#id, principal.id))")
     public ResponseEntity<EventoOutputDto> update(@PathVariable Long id, @Valid @RequestBody EventoInputDto inputDto) {
         Evento entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 
+    @PatchMapping("/{id}/aceptar")
+    @PreAuthorize("hasRole('RECINTO')")
+    public ResponseEntity<EventoOutputDto> accept(@PathVariable Long id) {
+        Evento entity = service.accept(id);
+        return ResponseEntity.ok(mapper.toDto(entity));
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoServiceImpl.isPropietario(#id, principal.id))")
+    public ResponseEntity<EventoOutputDto> cancel(@PathVariable Long id) {
+        Evento entity = service.cancel(id);
+        return ResponseEntity.ok(mapper.toDto(entity));
+    }
+
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoService.isPropietario(#id, principal.id))")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoServiceImpl.isPropietario(#id, principal.id))")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

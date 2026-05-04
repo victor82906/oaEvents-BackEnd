@@ -11,6 +11,7 @@ public class ZonaOutputDto {
     private String numero;
     private String coordenadas;
     private String puertaEntrada;
+    private Boolean pista;
     private Long recinto_id;
 
 }

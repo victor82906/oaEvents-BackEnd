@@ -46,6 +46,11 @@ public class EmpresaServiceImpl implements EmpresaService {
     }
 
     @Override
+    public Page<Empresa> buscarByActiva(String termino, boolean activa, Pageable pageable) {
+        return repository.searchByTermAndActiva(termino, activa, pageable);
+    }
+
+    @Override
     public Empresa findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa no encontrada con id: " + id));

@@ -124,6 +124,20 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
+    public Evento accept(Long id) {
+        Evento evento = this.findById(id);
+        evento.setAceptado(true);
+        return repository.save(evento);
+    }
+
+    @Override
+    public Evento cancel(Long id) {
+        Evento evento = this.findById(id);
+        evento.setAceptado(false);
+        return repository.save(evento);
+    }
+
+    @Override
     public Evento addFoto(Long id, MultipartFile archivo) {
         Evento evento = this.findById(id);
         

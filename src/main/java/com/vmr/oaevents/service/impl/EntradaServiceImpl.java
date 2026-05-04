@@ -131,7 +131,7 @@ public class EntradaServiceImpl implements EntradaService {
         if (!Objects.isNull(entrada.getZonaEvento()) && !Objects.isNull(entrada.getZonaEvento().getZona())) {
             datos.put("puerta", entrada.getZonaEvento().getZona().getPuertaEntrada());
             datos.put("numeroZona", entrada.getZonaEvento().getZona().getNumero());
-            pista = entrada.getZonaEvento().getZona().isPista();
+            pista = entrada.getZonaEvento().getZona().getPista();
         } else {
             datos.put("puerta", "N/A");
         }

@@ -61,6 +61,22 @@ public class EmpresaController {
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
+    @GetMapping("/activas/buscar/page")
+    public ResponseEntity<Page<EmpresaOutputDto>> buscarActivas(
+            @RequestParam String termino, 
+            Pageable pageable) {
+        Page<Empresa> page = service.buscarByActiva(termino, true, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
+    @GetMapping("/inactivas/buscar/page")
+    public ResponseEntity<Page<EmpresaOutputDto>> buscarInactivas(
+            @RequestParam String termino, 
+            Pageable pageable) {
+        Page<Empresa> page = service.buscarByActiva(termino, false, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('RECINTO') or principal.id == #id")
     public ResponseEntity<EmpresaOutputDto> findById(@PathVariable Long id) {

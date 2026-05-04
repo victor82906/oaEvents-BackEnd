@@ -22,4 +22,10 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
            "LOWER(e.cif) LIKE LOWER(CONCAT('%', :termino, '%'))")
     Page<Empresa> searchByNombreOrEmailOrCif(String termino, Pageable pageable);
 
+    @Query("SELECT e FROM Empresa e WHERE " +
+           "(LOWER(e.nombre) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
+           "LOWER(e.email) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
+           "LOWER(e.cif) LIKE LOWER(CONCAT('%', :termino, '%'))) AND " +
+           "e.activa = :activa")
+    Page<Empresa> searchByTermAndActiva(String termino, boolean activa, Pageable pageable);
 }

@@ -1,16 +1,33 @@
-# 1. El volumen persistente (para no perder datos si se apaga Minikube)
+# 1. Definimos el lugar físico en tu Windows
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-local
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+    # Esta es la ruta de tu carpeta C:\k8s-data\mysql traducida para Docker
+    path: "/run/desktop/mnt/host/c/k8s-data/mysql"
+---
+# 2. El reclamo del volumen (PVC) que usará el Deployment
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
 spec:
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
 ---
-# 2. El Deployment (el contenedor de MySQL)
+# 3. El Deployment (MySQL)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,12 +45,12 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:8.0 # Usa la versión que estés utilizando
+          image: mysql:8.0
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "root" # Cambia esto por tu contraseña
+              value: "root"
             - name: MYSQL_DATABASE
-              value: "oaevents" # El nombre de tu bd
+              value: "oaevents"
             - name: MYSQL_USER
               value: "admin"
             - name: MYSQL_PASSWORD
@@ -49,7 +66,7 @@ spec:
           persistentVolumeClaim:
             claimName: mysql-pv-claim
 ---
-# 3. El Service (para que Spring Boot pueda hablar con MySQL)
+# 4. El Service
 apiVersion: v1
 kind: Service
 metadata:

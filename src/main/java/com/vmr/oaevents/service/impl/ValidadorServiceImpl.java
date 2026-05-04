@@ -35,6 +35,11 @@ public class ValidadorServiceImpl implements ValidadorService {
     }
 
     @Override
+    public Page<Validador> buscar(String termino, Pageable pageable) {
+        return repository.searchByNombreOrEmailOrDni(termino, pageable);
+    }
+
+    @Override
     public Validador findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Validador no encontrado con id: " + id));

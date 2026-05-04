@@ -21,6 +21,8 @@ public interface EventoService {
     Evento findById(Long id);
     Evento save(Evento entity);
     Evento update(Long id, Evento entity);
+    Evento accept(Long id);
+    Evento cancel(Long id);
     Evento addFoto(Long id, MultipartFile archivo);
     void deleteById(Long id);
     boolean isPropietario(Long eventoId, Long empresaId);

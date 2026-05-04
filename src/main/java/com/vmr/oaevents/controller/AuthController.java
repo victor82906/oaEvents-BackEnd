@@ -50,6 +50,10 @@ public class AuthController {
             }
         }
 
+        if(usuario.getRol().getNombre().equals("VALIDADOR")){
+            throw new IllegalArgumentException("Los validadores actualmente no tienen funcionalidad");
+        }
+
         String token = jwtService.generateToken(usuario);
         return ResponseEntity.ok(new TokenResponse(token));
     }

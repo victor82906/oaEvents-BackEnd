@@ -40,6 +40,14 @@ public class ValidadorController {
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
+    @GetMapping("/buscar/page")
+    public ResponseEntity<Page<ValidadorOutputDto>> buscar(
+            @RequestParam String termino,
+            Pageable pageable) {
+        Page<Validador> page = service.buscar(termino, pageable);
+        return ResponseEntity.ok(page.map(mapper::toDto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ValidadorOutputDto> findById(@PathVariable Long id) {
         Validador entity = service.findById(id);

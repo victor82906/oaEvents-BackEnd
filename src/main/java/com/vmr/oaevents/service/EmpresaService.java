@@ -11,6 +11,7 @@ public interface EmpresaService {
     Page<Empresa> findAll(Pageable pageable);
     Page<Empresa> findAllByActiva(boolean activa, Pageable pageable);
     Page<Empresa> buscar(String termino, Pageable pageable);
+    Page<Empresa> buscarByActiva(String termino, boolean activa, Pageable pageable);
     Empresa findById(Long id);
     Empresa save(Empresa entity);
     Empresa update(Long id, Empresa entity);

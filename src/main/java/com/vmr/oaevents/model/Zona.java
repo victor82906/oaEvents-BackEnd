@@ -19,7 +19,7 @@ public class Zona {
     private String numero;
     private String coordenadas;
     private String puertaEntrada;
-    private boolean pista;
+    private Boolean pista;
 
     @ManyToOne
     @JoinColumn(name = "recinto_id")

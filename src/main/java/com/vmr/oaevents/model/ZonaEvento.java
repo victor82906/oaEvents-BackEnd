@@ -17,7 +17,7 @@ public class ZonaEvento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private double precio;
-    private boolean habilitada;
+    private Boolean habilitada;
 
     @ManyToOne
     @JoinColumn(name = "evento_id")

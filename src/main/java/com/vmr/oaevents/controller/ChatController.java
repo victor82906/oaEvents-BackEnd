@@ -50,7 +50,7 @@ public class ChatController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
+    @PreAuthorize("@chatServiceImpl.isEmisor(#id, principal.id)")
     public ResponseEntity<ChatOutputDto> findById(@PathVariable Long id) {
         Chat entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
@@ -67,7 +67,7 @@ public class ChatController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
+    @PreAuthorize("@chatServiceImpl.isEmisor(#id, principal.id)")
     public ResponseEntity<ChatOutputDto> update(@PathVariable Long id, @Valid @RequestBody ChatInputDto inputDto) {
         Chat entity = mapper.toEntity(inputDto);
         entity = service.update(id, entity);
@@ -75,7 +75,7 @@ public class ChatController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@chatService.isEmisor(#id, principal.id)")
+    @PreAuthorize("@chatServiceImpl.isEmisor(#id, principal.id)")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

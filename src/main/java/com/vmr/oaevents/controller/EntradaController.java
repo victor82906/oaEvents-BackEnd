@@ -54,7 +54,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('RECINTO') or @entradaService.isComprador(#id, principal.id)")
+    @PreAuthorize("hasRole('RECINTO') or @entradaServiceImpl.isComprador(#id, principal.id)")
     public ResponseEntity<EntradaOutputDto> findById(@PathVariable Long id) {
         Entrada entity = service.findById(id);
         return ResponseEntity.ok(mapper.toDto(entity));
@@ -72,7 +72,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{id}/descargar")
-    @PreAuthorize("@entradaService.isComprador(#id, principal.id)")
+    @PreAuthorize("@entradaServiceImpl.isComprador(#id, principal.id)")
     public ResponseEntity<byte[]> descargarEntrada(@PathVariable Long id) {
         byte[] pdfBytes = service.descargarEntradaPdf(id);
         
@@ -100,7 +100,7 @@ public class EntradaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('RECINTO') or @entradaService.isComprador(#id, principal.id)")
+    @PreAuthorize("hasRole('RECINTO') or @entradaServiceImpl.isComprador(#id, principal.id)")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
