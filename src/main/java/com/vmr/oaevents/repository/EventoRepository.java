@@ -27,7 +27,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     Page<Evento> findByAceptadoAndFechaBetween(boolean aceptado, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
-    @Query("SELECT DISTINCT ent.zonaEvento.evento FROM Entrada ent WHERE ent.comprador.id = :compradorId AND LOWER(ent.zonaEvento.evento.titulo) LIKE LOWER(CONCAT('%', :titulo, '%'))")
+    @Query("SELECT DISTINCT e FROM Evento e JOIN e.zonasEvento ze JOIN ze.entradas ent WHERE ent.comprador.id = :compradorId AND LOWER(e.titulo) LIKE LOWER(CONCAT('%', :titulo, '%'))")
     Page<Evento> findEventosByCompradorIdAndTitulo(@Param("compradorId") Long compradorId, @Param("titulo") String titulo, Pageable pageable);
 
 }
