@@ -53,6 +53,15 @@ public class EntradaController {
         return ResponseEntity.ok(page.map(mapper::toDto));
     }
 
+    @GetMapping("/comprador/{compradorId}/evento/{eventoId}")
+    @PreAuthorize("hasRole('RECINTO') or principal.id == #compradorId")
+    public ResponseEntity<List<EntradaOutputDto>> findByCompradorIdAndEventoId(@PathVariable Long compradorId, @PathVariable Long eventoId) {
+        List<Entrada> entradas = service.findByCompradorIdAndEventoId(compradorId, eventoId);
+        return ResponseEntity.ok(entradas.stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList()));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('RECINTO') or @entradaServiceImpl.isComprador(#id, principal.id)")
     public ResponseEntity<EntradaOutputDto> findById(@PathVariable Long id) {
@@ -72,7 +81,6 @@ public class EntradaController {
     }
 
     @GetMapping("/{id}/descargar")
-    @PreAuthorize("@entradaServiceImpl.isComprador(#id, principal.id)")
     public ResponseEntity<byte[]> descargarEntrada(@PathVariable Long id) {
         byte[] pdfBytes = service.descargarEntradaPdf(id);
         

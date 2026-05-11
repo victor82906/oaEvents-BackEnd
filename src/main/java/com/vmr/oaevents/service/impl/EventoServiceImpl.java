@@ -4,11 +4,12 @@ import com.vmr.oaevents.model.Empresa;
 import com.vmr.oaevents.model.Evento;
 import com.vmr.oaevents.model.TipoEvento;
 import com.vmr.oaevents.model.ZonaEvento;
+import com.vmr.oaevents.repository.EntradaRepository;
 import com.vmr.oaevents.repository.EventoRepository;
-import com.vmr.oaevents.repository.ZonaEventoRepository;
 import com.vmr.oaevents.service.EmpresaService;
 import com.vmr.oaevents.service.EventoService;
 import com.vmr.oaevents.service.TipoEventoService;
+import com.vmr.oaevents.service.ZonaEventoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,9 @@ public class EventoServiceImpl implements EventoService {
     private final EventoRepository repository;
     private final TipoEventoService tipoEventoService;
     private final EmpresaService empresaService;
-        private final ZonaEventoRepository zonaEventoRepository;
+    private final ZonaEventoService zonaEventoService;
     private final ImagenService imagenService;
+    private final EntradaRepository entradaRepository;
 
     @Override
     public List<Evento> findAll() {
@@ -167,7 +169,7 @@ public class EventoServiceImpl implements EventoService {
         
         evento.getZonasEvento().stream()
                 .map(ZonaEvento::getId)
-                .forEach(this.zonaEventoRepository::deleteById);
+                .forEach(this.zonaEventoService::deleteById);
         repository.delete(evento);
     }
 
@@ -175,5 +177,11 @@ public class EventoServiceImpl implements EventoService {
     public boolean isPropietario(Long eventoId, Long empresaId) {
         Evento evento = this.findById(eventoId);
         return evento.getEmpresa() != null && evento.getEmpresa().getId().equals(empresaId);
+    }
+
+    @Override
+    public long getAsistencia(Long eventoId) {
+        this.findById(eventoId); // Verify event exists
+        return entradaRepository.countByZonaEvento_Evento_Id(eventoId);
     }
 }

@@ -62,6 +62,7 @@ public class ChatController {
         inputDto.setFecha(LocalDateTime.now());
         inputDto.setEmisor_id(authenticationFacade.getAuthenticatedUsuario().getId());
 
+        service.save(mapper.toEntity(inputDto));
         kafkaProducer.enviarMensajeAKafka(inputDto);
         return ResponseEntity.accepted().build();
     }

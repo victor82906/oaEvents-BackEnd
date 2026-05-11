@@ -49,6 +49,13 @@ public class EntradaServiceImpl implements EntradaService {
     }
 
     @Override
+    public List<Entrada> findByCompradorIdAndEventoId(Long compradorId, Long eventoId) {
+        compradorService.findById(compradorId);
+        eventoService.findById(eventoId);
+        return repository.findByCompradorIdAndZonaEvento_Evento_Id(compradorId, eventoId);
+    }
+
+    @Override
     public Entrada findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entrada no encontrada con id: " + id));

@@ -1,0 +1,9 @@
+services:
+  kafka:
+    image: confluentinc/confluent-local:7.6.0
+    container_name: kafka-oaevents
+    ports:
+      - "9092:9092"
+    environment:
+      # Nos aseguramos de que Spring Boot pueda crear el topic del chat automáticamente
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"

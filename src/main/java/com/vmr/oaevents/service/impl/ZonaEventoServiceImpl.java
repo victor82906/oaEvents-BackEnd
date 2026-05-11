@@ -3,8 +3,8 @@ package com.vmr.oaevents.service.impl;
 import com.vmr.oaevents.model.Evento;
 import com.vmr.oaevents.model.Zona;
 import com.vmr.oaevents.model.ZonaEvento;
+import com.vmr.oaevents.repository.EventoRepository;
 import com.vmr.oaevents.repository.ZonaEventoRepository;
-import com.vmr.oaevents.service.EventoService;
 import com.vmr.oaevents.service.ZonaEventoService;
 import com.vmr.oaevents.service.ZonaService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ZonaEventoServiceImpl implements ZonaEventoService {
 
     private final ZonaEventoRepository repository;
-    private final EventoService eventoService;
+    private final EventoRepository eventoRepository;
     private final ZonaService zonaService;
 
     @Override
@@ -29,7 +29,8 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
 
     @Override
     public List<ZonaEvento> findByEventoId(Long eventoId) {
-        eventoService.findById(eventoId); // Validar que el evento existe
+        eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado con id: " + eventoId)); // Validar que el evento existe
         return repository.findByEventoId(eventoId);
     }
 
@@ -41,7 +42,8 @@ public class ZonaEventoServiceImpl implements ZonaEventoService {
 
     @Override
     public ZonaEvento save(ZonaEvento entity) {
-        Evento evento = eventoService.findById(entity.getEvento().getId());
+        Evento evento = eventoRepository.findById(entity.getEvento().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado con id: " + entity.getEvento().getId()));
         Zona zona = zonaService.findById(entity.getZona().getId());
         entity.setEvento(evento);
         entity.setZona(zona);

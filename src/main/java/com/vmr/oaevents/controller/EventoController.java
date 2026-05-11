@@ -133,6 +133,12 @@ public class EventoController {
         return ResponseEntity.ok(mapper.toDto(entity));
     }
 
+    @GetMapping("/{id}/asistencia")
+    @PreAuthorize("hasRole('RECINTO') or (hasRole('EMPRESA') and @eventoServiceImpl.isPropietario(#id, principal.id))")
+    public ResponseEntity<Long> getAsistencia(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getAsistencia(id));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('RECINTO', 'EMPRESA')")
     public ResponseEntity<EventoOutputDto> create(@Valid @RequestBody EventoInputDto inputDto) {

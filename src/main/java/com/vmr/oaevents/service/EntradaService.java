@@ -12,6 +12,7 @@ public interface EntradaService {
     List<Entrada> findAll();
     Page<Entrada> findAll(Pageable pageable);
     Page<Entrada> findByCompradorId(Long compradorId, Pageable pageable);
+    List<Entrada> findByCompradorIdAndEventoId(Long compradorId, Long eventoId);
     Entrada findById(Long id);
     Entrada save(Entrada entity, boolean logueado);
     Entrada update(Long id, Entrada entity);

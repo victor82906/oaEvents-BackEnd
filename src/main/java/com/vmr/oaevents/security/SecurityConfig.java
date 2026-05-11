@@ -39,10 +39,13 @@ public class SecurityConfig {
                             config.setAllowedOriginPatterns(List.of("*"));
                             config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                             config.setAllowedHeaders(List.of("*"));
+                            config.setAllowCredentials(true);
                             return config;
                         }))
                         .csrf(csrf -> csrf.disable())
                         .authorizeHttpRequests((authorize) -> authorize
+
+                                .requestMatchers("/ws-chat/**").permitAll()
 
                                 // fotos
                                 .requestMatchers("/uploads/**").permitAll()
@@ -61,6 +64,7 @@ public class SecurityConfig {
                                 // Entrada
                                 .requestMatchers(HttpMethod.POST, "/entrada/comprar").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/entrada/zona-evento/*/localidades-libres").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/entrada/*/descargar").permitAll()
 
                                 // Evento
                                 .requestMatchers(HttpMethod.GET, "/evento/aceptados/page").permitAll()
@@ -89,7 +93,7 @@ public class SecurityConfig {
                                 .requestMatchers("/tipo-evento", "/tipo-evento/**").hasRole("RECINTO")
 
                                 // Usuario
-                                .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasRole("RECINTO")
+                                .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasAnyRole("RECINTO", "EMPRESA")
                                 .requestMatchers(HttpMethod.POST, "/usuario").hasRole("RECINTO")
                                 .requestMatchers(HttpMethod.PUT, "/usuario/*").hasRole("RECINTO")
                                 .requestMatchers(HttpMethod.DELETE, "/usuario/*").hasRole("RECINTO")

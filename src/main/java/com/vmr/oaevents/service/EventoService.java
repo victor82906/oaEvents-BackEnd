@@ -27,4 +27,5 @@ public interface EventoService {
     Evento addFoto(Long id, MultipartFile archivo);
     void deleteById(Long id);
     boolean isPropietario(Long eventoId, Long empresaId);
+    long getAsistencia(Long eventoId);
 }
