@@ -1,4 +1,4 @@
-# 1. Definimos el lugar físico en tu Windows
+# 1. Volumen local donde se va a guardar la base de datos:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   hostPath:
-    # Esta es la ruta de tu carpeta C:\k8s-data\mysql traducida para Docker
+    # Esta es la ruta de tu carpeta C:\k8s-data\mysql local traducida para Docker
     path: "/run/desktop/mnt/host/c/k8s-data/mysql"
 ---
 # 2. El reclamo del volumen (PVC) que usará el Deployment
@@ -27,7 +27,7 @@ spec:
     requests:
       storage: 2Gi
 ---
-# 3. El Deployment (MySQL)
+# 3. Despliegue de contenedor mysql
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -66,7 +66,7 @@ spec:
           persistentVolumeClaim:
             claimName: mysql-pv-claim
 ---
-# 4. El Service
+# 4. El Service para tener un punto de entrada
 apiVersion: v1
 kind: Service
 metadata:
@@ -77,4 +77,5 @@ spec:
   selector:
     app: mysql
 
+#  kubectl apply -f mysql-k8s.yaml
 #  kubectl port-forward svc/mysql-service 3306:3306
