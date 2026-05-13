@@ -1,0 +1,22 @@
+# 1. Compilacion
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copiamos el pom.xml y descargamos dependencias (esto ayuda a la caché de Docker)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# 2. Ejecucion
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# docker build -f dockerfileSpring -t oaevents-backend:v1 .

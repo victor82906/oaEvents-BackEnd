@@ -1,6 +1,6 @@
 package com.vmr.oaevents.service.kafka;
 
-import com.vmr.oaevents.model.dto.chat.ChatInputDto;
+import com.vmr.oaevents.model.dto.chat.ChatOutputDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatKafkaProducer {
 
-    private final KafkaTemplate<String, ChatInputDto> kafkaTemplate;
+    private final KafkaTemplate<String, ChatOutputDto> kafkaTemplate;
 
-    public void enviarMensajeAKafka(ChatInputDto inputDto) {
+    public void enviarMensajeAKafka(ChatOutputDto outputDto) {
         // Enviamos el DTO al tópico "chat-topic"
-        kafkaTemplate.send("chat-topic", inputDto);
+        kafkaTemplate.send("chat-topic", outputDto);
     }
 }
