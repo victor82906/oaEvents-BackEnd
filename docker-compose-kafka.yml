@@ -9,7 +9,8 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       # Definimos los roles de seguridad
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      # 2. Abrimos los puertos (29092 red de Docker, 9092 para fuera/K8s, 29093 para el controlador)
+      # Abrimos los puertos (29092 red de Docker, 9092 para fuera/K8s, 29093 para el controlador)
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
-      # 3. Aquí es donde ocurre la magia: publicamos "host.docker.internal" en el puerto 9092
+      # Publicamos "host.docker.internal" en el puerto 9092 para que SpringBoot se conecte
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-oaevents:29092,PLAINTEXT_HOST://host.docker.internal:9092
+

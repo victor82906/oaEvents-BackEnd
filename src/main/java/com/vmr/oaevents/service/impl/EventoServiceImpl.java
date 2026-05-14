@@ -125,8 +125,7 @@ public class EventoServiceImpl implements EventoService {
         entity.setEmpresa(evento.getEmpresa());
         entity.setAceptado(evento.isAceptado());
         entity.setFoto(evento.getFoto());
-        TipoEvento tipoEvento = tipoEventoService.findById(entity.getTipoEvento().getId());
-        entity.setTipoEvento(tipoEvento);
+        entity.setTipoEvento(evento.getTipoEvento());
         return repository.save(entity);
     }
 
