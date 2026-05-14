@@ -180,7 +180,7 @@ public class EventoServiceImpl implements EventoService {
 
     @Override
     public long getAsistencia(Long eventoId) {
-        this.findById(eventoId); // Verify event exists
+        this.findById(eventoId);
         return entradaRepository.countByZonaEvento_Evento_Id(eventoId);
     }
 }
